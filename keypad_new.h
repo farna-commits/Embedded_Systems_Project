@@ -25,4 +25,5 @@ Keypad keypad                       = Keypad(makeKeymap(keys), rowPins, colPins,
 
 bool flag_key = false;
 
-char array_ID[ID_SIZE] = {};
+char array_ID[ID_SIZE]    = {};
+char array_PIN[PIN_SIZE]  = {};
