@@ -1,14 +1,6 @@
 #include "keypad_new.h"
 
 void read_ID() {
-// for (int i = 0; i < ID_SIZE; i++)
-// {
-//   key = keypad.getKey();
-//   if (key!= NO_KEY){
-//     array_ID[i] = key;
-//   }
-// }
-
 int i=0;
 while (i<ID_SIZE)
 {
@@ -18,6 +10,16 @@ while (i<ID_SIZE)
     i++;
   }
 }
-
 }
 
+void read_PIN() {
+int i=0;
+while (i<PIN_SIZE)
+{
+  key = keypad.getKey();
+  if (key!= NO_KEY){
+    array_PIN[i] = key;
+    i++;
+  }
+}
+}
