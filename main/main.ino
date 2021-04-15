@@ -17,7 +17,7 @@ while (!Serial) continue;
     return;
   }  
 
-  int temp = doc["ID"][249];
+  uint8_t temp = doc["ID"][49];
   Serial.println(temp);
   
 }
