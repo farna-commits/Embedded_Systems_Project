@@ -1,5 +1,8 @@
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\keypad_new.c"
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\database_json.h"
+#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\diffie_hellman.h"
+#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\AES128.c"
+#include <string.h>
 
 
 
@@ -17,9 +20,16 @@ while (!Serial) continue;
     return;
   }  
 
-  uint8_t temp = doc["ID"][49];
-  Serial.println(temp);
+  int temp = doc["ID"][49];
   
+  Serial.println(temp);
+  char buf[4];
+  // Convert number to string [buf]
+  itoa(temp, buf, 10);
+  Serial.println(buf);
+  strcat(buf,"0000000000000000");
+  Serial.println(buf);
+  AES_encrypt("123");
 }
 
 void loop() {
