@@ -5,7 +5,8 @@ void AES_encrypt(char * data) {
     uint8_t f[KEY_SIZE];
     uint8_t k[KEY_SIZE];
 
-    uint8_t key[KEY_SIZE] = generate_key(f,k);
+    uint8_t key[KEY_SIZE];
+    key = generate_key(f,k);
     aes128_enc_single(key, data);
     Serial.print("encrypted:");
     Serial.print(data[0]);      
