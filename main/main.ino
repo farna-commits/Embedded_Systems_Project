@@ -1,36 +1,28 @@
-#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\keypad_new.c"
-#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\database_json.h"
+//Includes 
+#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.c"
+#include <string.h>
 
-
-
-
+//Setup 
 void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);  
-while (!Serial) continue;
-  // Deserialize the JSON document
-  DeserializationError error = deserializeJson(doc, json);
-  // Test if parsing succeeds.
-  if (error) {
-    Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.f_str());
-    return;
-  }  
+  //variables 
+  uint8_t public_key[16] = {};
+  uint8_t secret_key[16] = {};
+  char ID_string[16];
+  int ID_example; 
 
-  uint8_t temp = doc["ID"][49];
-  Serial.println(temp);
-  
+  Serial.begin(9600);  
+  while (!Serial) continue;
+  Read_json(doc,json);                                                //read json file 
+  ID_example = doc["ID"][49];                                         //fetch ID from json database 
+  Serial.print("Fetching an ID from database as an example: ");
+  Serial.println(ID_example);  
+  itoa(ID_example, ID_string, 10);                                    //Convert int to string
+  strcat(ID_string,"00000000000");                                    //concatinate with 12 0s to align for aes function   
+  GENERATE_KEY(public_key, secret_key);                               //call macro that generates key using Diffie Hellman 
+  AES_encrypt(public_key,ID_string);                                  //encrypt using aes128 
 }
 
+//Loop 
 void loop() {
-//   int temp = doc["ID"][2];
-//  Serial.println("test");
-//   put your main code here, to run repeatedly:
-//   read_ID();
-//   Serial.println("test9");
-//   Serial.println(array_ID[0]);
-//  Serial.println(array_ID[1]);
-//  Serial.println(array_ID[2]);
-//   Serial.println(array_ID[3]);
  
 }

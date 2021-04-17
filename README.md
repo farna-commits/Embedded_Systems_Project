@@ -1,2 +1,2 @@
-# Embedded_Systems_Project
+# Embedded Systems Project
 Repo for ECNG4504 Project 
