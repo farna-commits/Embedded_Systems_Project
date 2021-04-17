@@ -16,7 +16,7 @@
 const uint8_t ID_SIZE      = 4;
 const uint8_t PIN_SIZE     = 4;
 
-char key;
+char key2;
 const byte ROWS = 4; //four rows
 const byte COLS = 4; //three columns
 char keys[ROWS][COLS]               = {
@@ -34,10 +34,9 @@ char json[] = "{\"ID\": [2606, 3405, 2303, 2073, 1635, 3668, 1133, 1968, 1440, 2
 
 //Functions 
 uint16_t array_ID[ID_SIZE]    = {};
-uint8_t * generate_key(uint8_t f[],uint8_t k[]);
-void AES_encrypt(char * data); 
-
-
+void AES_encrypt(uint8_t * key, uint8_t * buf );
+DeserializationError Read_json(StaticJsonDocument<700>, char*); 
+char * align_ID_string(int, char a[]);
 
 #ifdef __cplusplus
 }
