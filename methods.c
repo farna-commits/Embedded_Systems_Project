@@ -47,3 +47,10 @@ void AES_decrypt(uint8_t * key, char * buf) {
   Serial.print(buf[2]);
   Serial.print(buf[3]);
 }
+// void add_user() {
+//   read_ID();
+//   for(int i=0 i< ID_SIZE; i++)
+//     json[strlen(json)-(3-i)]=array_ID[i];
+//   strcat(json, array_ID);
+
+// }

@@ -9,7 +9,7 @@ void setup() {
   //variables 
   char ID_string[16];
   int ID_example = 0; 
-
+ // add_user();
   Read_json(doc,json);                                                //read json file 
   ID_example = doc["ID"][49];                                          //fetch ID from json database 
   Serial.print("Fetching an ID from database as an example: ");
