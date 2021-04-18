@@ -87,7 +87,8 @@
 
 
   void ProcessInputMessage (char * InputString) { 
-  LengthOfInputString = strlen(InputString);  //Length in bytes, max 55 bytes
+  // LengthOfInputString = strlen(InputString);  //Length in bytes, max 55 bytes
+  LengthOfInputString = 16;  //Length in bytes, max 55 bytes
 
   if (LengthOfInputString > 55) {
     Serial.println();
