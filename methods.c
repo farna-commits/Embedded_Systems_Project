@@ -3,11 +3,11 @@
 #define GENERATE_KEY(X, Y)    Curve25519::dh1(X, Y)
 
 void read_ID() {
-  int i=0;
-  while (i<ID_SIZE)
+  int i = 0;
+  while (i < ID_SIZE)
   {
     key2 = keypad.getKey();
-    if (key2!= NO_KEY){
+    if (key2 != NO_KEY){
       array_ID[i] = key2;
       i++;
     }
@@ -36,11 +36,14 @@ void AES_encrypt(uint8_t * key, char * buf ) {
   aes128_enc_single(key, buf);
   Serial.print("Encrypted ID:");
   Serial.println(buf);
+
+}
+
+void AES_decrypt(uint8_t * key, char * buf) {
   aes128_dec_single(key, buf);
   Serial.print("Decrypted ID:");
   Serial.print(buf[0]);
   Serial.print(buf[1]);
   Serial.print(buf[2]);
   Serial.print(buf[3]);
-
 }

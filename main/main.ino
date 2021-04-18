@@ -11,7 +11,7 @@ void setup() {
   int ID_example = 0; 
 
   Read_json(doc,json);                                                //read json file 
-  ID_example = doc["ID"][3];                                         //fetch ID from json database 
+  ID_example = doc["ID"][49];                                          //fetch ID from json database 
   Serial.print("Fetching an ID from database as an example: ");
   Serial.println(ID_example);  
   itoa(ID_example, ID_string, 10);                                    //Convert int to string
@@ -20,6 +20,7 @@ void setup() {
   uint8_t secret_key[16] = {};                                           
   GENERATE_KEY(public_key, secret_key);                               //call macro that generates key using Diffie Hellman 
   AES_encrypt(public_key,ID_string);                                  //encrypt using aes128 
+  AES_decrypt(public_key, ID_string);                                 //decryption test 
 }
 
 //Loop 
