@@ -2,6 +2,7 @@
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.c"
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 #include <string.h>
+#include <SHA256.h>
 
 //Setup 
 void setup() {
@@ -12,11 +13,10 @@ void setup() {
   int ID_example = 0; 
 
   Read_json(doc,json);                                                //read json file 
-  ID_example = doc["ID"][49];                                          //fetch ID from json database 
+  ID_example = doc["ID"][49];                                         //fetch ID from json database 
   Serial.print("Fetching an ID from database as an example: ");
   Serial.println(ID_example);  
-  itoa(ID_example, ID_string, 10);                                    //Convert int to string  
-  strcat(ID_string,"00000000000");                                    //concatinate with 12 0s to align for aes function 
+  align_ID_string(ID_example, ID_string);                             //concatinate with 12 0s to align for aes function 
   uint8_t public_key[16] = {};
   uint8_t secret_key[16] = {};                                           
   GENERATE_KEY(public_key, secret_key);                               //call macro that generates key using Diffie Hellman 
@@ -26,6 +26,9 @@ void setup() {
   //Hashing 
   char msg[] = "Hii";
   ProcessInputMessage("Hi");
+
+  // SHA256();
+
 }
 
 //Loop 

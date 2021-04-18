@@ -26,10 +26,9 @@ DeserializationError Read_json(StaticJsonDocument<700>, char*) {
   return error; 
 }
 
-char * align_ID_string(int ID_example, char a[16]) {
+void align_ID_string(int ID_example, char a[16]) {
   itoa(ID_example, a, 10);
   strcat(a,"00000000000");
-  return a; 
 }
 
 void AES_encrypt(uint8_t * key, char * buf ) {
