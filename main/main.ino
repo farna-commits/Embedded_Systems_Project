@@ -12,14 +12,10 @@ void setup() {
   //variables 
   char * ID_string;
   int ID_example = 0; 
-<<<<<<< HEAD
- // add_user();
-=======
   
 
   ID_string = (char*)calloc(16, sizeof(char));                        //allocate memory, and automatically freed 
 
->>>>>>> 0a200795fc2633ab94f0a684b1c213d72ed567a9
   Read_json(doc,json);                                                //read json file 
   ID_example = doc["ID"][2];                                         //fetch ID from json database 
   Serial.print("Fetching an ID from database as an example: ");
