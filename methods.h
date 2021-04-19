@@ -34,7 +34,7 @@ uint16_t array_ID[ID_SIZE]    = {};
 void AES_encrypt(uint8_t * key, uint8_t * buf );
 void AES_decrypt(uint8_t * key, char * buf); 
 DeserializationError Read_json(StaticJsonDocument<700>, char*); 
-char * align_ID_string(int, char a[]);
+void align_ID_string(int, char a[]);
 
 #ifdef __cplusplus
 }
