@@ -1,21 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-void setup(){
-  Serial.begin(9600);
-  char * ID_string;  
-  ID_string = (char*)calloc(16, sizeof(char));                        //allocate memory, and automatically freed 
-  ID_string = "The quick brown fox" ;
-  Serial.begin(9600);
-
-  Serial.println();
-
-  Serial.print ("Input message...");
-  Serial.println();
-  Serial.print (ID_string);
-  Serial.println();
-
-  ProcessInputMessage (ID_string); 
-}
 unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
 // Function ProcessInputMessage
   unsigned long S0; // Sigma0(HashA)  
@@ -91,6 +73,10 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
   TempSigma1=((InputHash&0x0000003f)<<32-6)+(InputHash>>6)^((InputHash&0x000007ff)<<32-11)+(InputHash>>11)^((InputHash&0x01ffffff)<<32-25)+(InputHash>>25);
   return TempSigma1;}
 
+
+ char char_tempo0[4],char_tempo1[4],char_tempo2[4],char_tempo3[4],char_tempo4[4], char_tempo5[4], char_tempo6[4], char_tempo7[4];
+ char empty[32]="";
+ char finale[256]="";
 // Function PrintWithLeadingZero
   unsigned long TempLz;  
   void PrintWithLeadingZero (unsigned long ReceiveUnsignedLong) {
@@ -102,10 +88,15 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
     TempLz=ReceiveUnsignedLong&0x00000f00; TempLz=TempLz>>8; /*Serial.print(TempLz, HEX);*/  tempo5=TempLz;
     TempLz=ReceiveUnsignedLong&0x000000f0; TempLz=TempLz>>4; /*Serial.print(TempLz, HEX);*/  tempo6=TempLz;
     TempLz=ReceiveUnsignedLong&0x0000000f; TempLz=TempLz>>0; /*Serial.print(TempLz, HEX);*/  tempo7=TempLz;
+
+   ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
+   strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);      
+   strcat(finale,empty);
+   memset(&empty[0], 0, sizeof(empty));
 }
 
 
-  void ProcessInputMessage (char * InputString) { 
+  void ProcessInputMessage (char * InputString, char * hashed_string) { 
   // LengthOfInputString = strlen(InputString);  //Length in bytes, max 55 bytes
   LengthOfInputString = 16;  //Length in bytes, max 55 bytes
 
@@ -205,86 +196,20 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
   Serial.print("SHA256 hashed output message...") ;
   Serial.println() ;
   
- char char_tempo0[4],char_tempo1[4],char_tempo2[4],char_tempo3[4],char_tempo4[4], char_tempo5[4], char_tempo6[4], char_tempo7[4];
- char empty[32]="";
- char finale[256]="";
-  //Print the result
 
-  PrintWithLeadingZero(h0);
-     
-  ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
-   strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);      
-  Serial.print(tempo0, HEX);   Serial.print(tempo1, HEX);  Serial.print(tempo2, HEX);   Serial.print(tempo3, HEX);   Serial.print(tempo4, HEX);  Serial.print(tempo5, HEX);   Serial.print(tempo6, HEX); Serial.print(tempo7, HEX); 
- //Serial.print(empty); 
- strcat(finale,empty);
- memset(&empty[0], 0, sizeof(empty));
-  //Serial.print(char_tempo0); Serial.print(char_tempo1);Serial.print(char_tempo2); Serial.print(char_tempo3); Serial.print(char_tempo4); Serial.print(char_tempo5); Serial.print(char_tempo6); Serial.print(char_tempo7);
-  PrintWithLeadingZero(h1);
-  ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
-  
-  strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7); 
-  Serial.print(tempo0, HEX);   Serial.print(tempo1, HEX);  Serial.print(tempo2, HEX);   Serial.print(tempo3, HEX);   Serial.print(tempo4, HEX);  Serial.print(tempo5, HEX);   Serial.print(tempo6, HEX); Serial.print(tempo7, HEX); 
-  // Serial.print(char_tempo0); Serial.print(char_tempo1);Serial.print(char_tempo2); Serial.print(char_tempo3); Serial.print(char_tempo4); Serial.print(char_tempo5); Serial.print(char_tempo6); Serial.print(char_tempo7);
-  //Serial.print(empty);
-   strcat(finale,empty);
-  memset(&empty[0], 0, sizeof(empty));
-  PrintWithLeadingZero(h2);
-  
-  ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
-  strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);     
-  Serial.print(tempo0, HEX);   Serial.print(tempo1, HEX);  Serial.print(tempo2, HEX);   Serial.print(tempo3, HEX);   Serial.print(tempo4, HEX);  Serial.print(tempo5, HEX);   Serial.print(tempo6, HEX); Serial.print(tempo7, HEX); 
-   
- //  Serial.print(empty);
-    strcat(finale,empty);
-  memset(&empty[0], 0, sizeof(empty));//Serial.print(char_tempo0); Serial.print(char_tempo1);Serial.print(char_tempo2); Serial.print(char_tempo3); Serial.print(char_tempo4); Serial.print(char_tempo5); Serial.print(char_tempo6); Serial.print(char_tempo7);
+  //Print the result
+  PrintWithLeadingZero(h0); 
+  PrintWithLeadingZero(h1); 
+  PrintWithLeadingZero(h2);  
   PrintWithLeadingZero(h3);
-  ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
-  strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);     
-  Serial.print(tempo0, HEX);   Serial.print(tempo1, HEX);  Serial.print(tempo2, HEX);   Serial.print(tempo3, HEX);   Serial.print(tempo4, HEX);  Serial.print(tempo5, HEX);   Serial.print(tempo6, HEX); Serial.print(tempo7, HEX); 
-  //Serial.print(char_tempo0); Serial.print(char_tempo1);Serial.print(char_tempo2); Serial.print(char_tempo3); Serial.print(char_tempo4); Serial.print(char_tempo5); Serial.print(char_tempo6); Serial.print(char_tempo7);
-  //Serial.print(empty);
-   strcat(finale,empty);
-  memset(&empty[0], 0, sizeof(empty));
   PrintWithLeadingZero(h4);
-  ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
-  strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);     
-  Serial.print(tempo0, HEX);   Serial.print(tempo1, HEX);  Serial.print(tempo2, HEX);   Serial.print(tempo3, HEX);   Serial.print(tempo4, HEX);  Serial.print(tempo5, HEX);   Serial.print(tempo6, HEX); Serial.print(tempo7, HEX); 
-   //Serial.print(char_tempo0); Serial.print(char_tempo1);Serial.print(char_tempo2); Serial.print(char_tempo3); Serial.print(char_tempo4); Serial.print(char_tempo5); Serial.print(char_tempo6); Serial.print(char_tempo7);
- // Serial.print(empty);
-   strcat(finale,empty);
-  memset(&empty[0], 0, sizeof(empty));
   PrintWithLeadingZero(h5);
-  ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
-  strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);     
-  Serial.print(tempo0, HEX);   Serial.print(tempo1, HEX);  Serial.print(tempo2, HEX);   Serial.print(tempo3, HEX);   Serial.print(tempo4, HEX);  Serial.print(tempo5, HEX);   Serial.print(tempo6, HEX); Serial.print(tempo7, HEX); 
-   //Serial.print(char_tempo0); Serial.print(char_tempo1);Serial.print(char_tempo2); Serial.print(char_tempo3); Serial.print(char_tempo4); Serial.print(char_tempo5); Serial.print(char_tempo6); Serial.print(char_tempo7);
-  //Serial.print(empty);
-   strcat(finale,empty);
-  memset(&empty[0], 0, sizeof(empty));
   PrintWithLeadingZero(h6);
-  ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
-  strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);     
-  Serial.print(tempo0, HEX);   Serial.print(tempo1, HEX);  Serial.print(tempo2, HEX);   Serial.print(tempo3, HEX);   Serial.print(tempo4, HEX);  Serial.print(tempo5, HEX);   Serial.print(tempo6, HEX); Serial.print(tempo7, HEX); 
-  //Serial.print(empty);
-   strcat(finale,empty);
-  memset(&empty[0], 0, sizeof(empty));
-  // Serial.print(char_tempo0); Serial.print(char_tempo1);Serial.print(char_tempo2); Serial.print(char_tempo3); Serial.print(char_tempo4); Serial.print(char_tempo5); Serial.print(char_tempo6); Serial.print(char_tempo7);
   PrintWithLeadingZero(h7);
-  ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
-  strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);     
-  Serial.print(tempo0, HEX);   Serial.print(tempo1, HEX);  Serial.print(tempo2, HEX);   Serial.print(tempo3, HEX);   Serial.print(tempo4, HEX);  Serial.print(tempo5, HEX);   Serial.print(tempo6, HEX); Serial.print(tempo7, HEX); 
-  // Serial.print(char_tempo0); Serial.print(char_tempo1);Serial.print(char_tempo2); Serial.print(char_tempo3); Serial.print(char_tempo4); Serial.print(char_tempo5); Serial.print(char_tempo6); Serial.print(char_tempo7);
- // Serial.print(empty);
-   strcat(finale,empty);
- 
-  Serial.println();
-   
+  Serial.print(finale);
+  strcpy(hashed_string, finale);
   Serial.println();
   Serial.print("----------------------------------------------------------------") ;
   Serial.println();
-  Serial.print("Equivalent concatenated string: ");
-  Serial.print(finale);
+ 
 }//End
-
-void loop() {}
-
