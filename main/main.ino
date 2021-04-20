@@ -17,7 +17,7 @@ void setup() {
   ID_string = (char*)calloc(16, sizeof(char));                        //allocate memory, and automatically freed 
 
   Read_json(doc,json);                                                //read json file 
-  ID_example = doc["ID"][2];                                         //fetch ID from json database 
+  ID_example = doc["ID"][9];                                         //fetch ID from json database 
   Serial.print("Fetching an ID from database as an example: ");
   Serial.println(ID_example);  
   align_ID_string(ID_example, ID_string);                             //concatinate with 12 0s to align for aes function 
@@ -28,7 +28,11 @@ void setup() {
   AES_decrypt(public_key, ID_string);                                 //decryption test 
 
   //Hashing 
-  ProcessInputMessage(ID_string);
+  char * hashed_string; 
+  hashed_string = (char*)calloc(256, sizeof(char));     
+  ProcessInputMessage(ID_string, hashed_string);
+  Serial.println("Hashed printing from main method: ");  
+  Serial.println(hashed_string);  
 
 
 }
