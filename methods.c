@@ -34,6 +34,7 @@ void AES_encrypt(uint8_t * key, char * buf ) {
   aes128_enc_single(key, buf);
   Serial.print("Encrypted ID:");
   Serial.println(buf);
+  //Serial.println(strlen(buf));
 
 }
 
@@ -52,3 +53,27 @@ void AES_decrypt(uint8_t * key, char * buf) {
 //   strcat(json, array_ID);
 
 // }
+
+//----------------------------Communication-----------------------------
+
+/* Function to receive incoming messages from remote side */
+void onFrameIn(uint8_t *buf, int len)
+{
+    /* Do what you need with receive data here */
+}
+
+Tiny::ProtoHd  proto(proto_buffer, sizeof(proto_buffer), onFrameIn);
+
+void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
+  if (packetSize > MAX_BUFFER_SIZE) {
+    packetSize = MAX_BUFFER_SIZE;
+  }
+  Tiny::Packet<16> packet; 
+  proto.enableCheckSum(); 
+  proto.beginToSerial();
+  packet.clear(); 
+  packet.put(packet_header_to_send);          //add the packet header as the first byte 
+  packet.put(packet_to_send);         //add the data to the packet 
+  proto.write(packet);
+  
+}

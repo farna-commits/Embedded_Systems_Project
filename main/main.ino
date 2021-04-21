@@ -2,13 +2,14 @@
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.c"
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 #include <string.h>
+#include <TinyProtocol.h>
 
-#define msg_define "Hi my name is osama\0"
 //Setup 
 void setup() {
 
   Serial.begin(9600);  
   while (!Serial) continue;
+  Serial.setTimeout(0);
   //variables 
   char * ID_string;
   int ID_example = 0; 
@@ -33,6 +34,22 @@ void setup() {
   ProcessInputMessage(ID_string, hashed_string);
   Serial.println("Hashed printing from main method: ");  
   Serial.println(hashed_string);  
+
+  //Communication 
+  char * packet_ID; 
+  uint8_t packetsize_ID = 16; 
+  char * packet_dh;
+  uint8_t packetsize_dh = 32; 
+  packet_ID = (char*)calloc(packetsize_ID, sizeof(char)); 
+  packet_dh = (char*)calloc(packetsize_dh, sizeof(char)); 
+  strcpy(packet_ID, "Hello");
+  strcpy(packet_dh, "Public Key");
+  Serial.println("Printing ID sent with tinyproto");  
+  send_packet(packetsize_ID, packet_ID, ID_HEADER);
+  Serial.println();
+  Serial.println("Printing Diffie Public Key sent with tinyproto");  
+  send_packet(packetsize_dh, packet_dh, DIFFIE_PUBLIC_KEY);
+  Serial.println();
 
 
 }
