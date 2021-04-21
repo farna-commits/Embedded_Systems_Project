@@ -64,7 +64,7 @@ void onFrameIn(uint8_t *buf, int len)
 
 Tiny::ProtoHd  proto(proto_buffer, sizeof(proto_buffer), onFrameIn);
 
-void send_packet(uint16_t packetSize, char * packet_to_send) {
+void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
@@ -72,7 +72,8 @@ void send_packet(uint16_t packetSize, char * packet_to_send) {
   proto.enableCheckSum(); 
   proto.beginToSerial();
   packet.clear(); 
-  packet.put(packet_to_send);
+  packet.put(packet_header_to_send);          //add the packet header as the first byte 
+  packet.put(packet_to_send);         //add the data to the packet 
   proto.write(packet);
   
 }
