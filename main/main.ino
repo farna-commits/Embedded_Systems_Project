@@ -2,13 +2,14 @@
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.c"
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 #include <string.h>
+#include <TinyProtocol.h>
 
-#define msg_define "Hi my name is osama\0"
 //Setup 
 void setup() {
 
   Serial.begin(9600);  
   while (!Serial) continue;
+  Serial.setTimeout(0);
   //variables 
   char * ID_string;
   int ID_example = 0; 
@@ -33,6 +34,13 @@ void setup() {
   ProcessInputMessage(ID_string, hashed_string);
   Serial.println("Hashed printing from main method: ");  
   Serial.println(hashed_string);  
+
+  //Communication 
+  char * packet; 
+  uint8_t packetsize = 16; 
+  packet = (char*)calloc(packetsize, sizeof(char)); 
+  packet = "Hello";
+  send_packet(packetsize, packet);
 
 
 }
