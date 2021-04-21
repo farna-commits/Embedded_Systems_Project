@@ -36,11 +36,20 @@ void setup() {
   Serial.println(hashed_string);  
 
   //Communication 
-  char * packet; 
-  uint8_t packetsize = 16; 
-  packet = (char*)calloc(packetsize, sizeof(char)); 
-  packet = "Hello";
-  send_packet(packetsize, packet);
+  char * packet_ID; 
+  uint8_t packetsize_ID = 16; 
+  char * packet_dh;
+  uint8_t packetsize_dh = 32; 
+  packet_ID = (char*)calloc(packetsize_ID, sizeof(char)); 
+  packet_dh = (char*)calloc(packetsize_dh, sizeof(char)); 
+  strcpy(packet_ID, "Hello");
+  strcpy(packet_dh, "Public Key");
+  Serial.println("Printing ID sent with tinyproto");  
+  send_packet(packetsize_ID, packet_ID, ID_HEADER);
+  Serial.println();
+  Serial.println("Printing Diffie Public Key sent with tinyproto");  
+  send_packet(packetsize_dh, packet_dh, DIFFIE_PUBLIC_KEY);
+  Serial.println();
 
 
 }
