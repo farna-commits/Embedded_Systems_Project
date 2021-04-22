@@ -1,6 +1,9 @@
 //Includes 
-#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.c"
-#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
+//#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.c"
+//#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
+#include "C:\Users\Mahmoud Shamaa\Desktop\Embedded Systems\Project\Embedded_Systems_Project\methods.c"
+#include "C:\Users\Mahmoud Shamaa\Desktop\Embedded Systems\Project\Embedded_Systems_Project\hashing.c"
+
 #include <string.h>
 #include <TinyProtocol.h>
 
@@ -37,9 +40,9 @@ void setup() {
 
   //Communication 
   char * packet_ID; 
-  uint8_t packetsize_ID = 16; 
+  uint16_t packetsize_ID = 16; 
   char * packet_dh;
-  uint8_t packetsize_dh = 32; 
+  uint16_t packetsize_dh = 32; 
   packet_ID = (char*)calloc(packetsize_ID, sizeof(char)); 
   packet_dh = (char*)calloc(packetsize_dh, sizeof(char)); 
   strcpy(packet_ID, "Hello");
@@ -48,7 +51,7 @@ void setup() {
   send_packet(packetsize_ID, packet_ID, ID_HEADER);
   Serial.println();
   Serial.println("Printing Diffie Public Key sent with tinyproto");  
-  send_packet(packetsize_dh, packet_dh, DIFFIE_PUBLIC_KEY);
+  //send_packet(packetsize_dh, packet_dh, DIFFIE_PUBLIC_KEY);
   Serial.println();
 
 
