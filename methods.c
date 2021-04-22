@@ -60,9 +60,34 @@ void AES_decrypt(uint8_t * key, char * buf) {
 void onFrameIn(uint8_t *buf, int len)
 {
     /* Do what you need with receive data here */
+     for (int i=0; i<len; i++) received_packet[i]=(char)buf[i];
+    if(received_packet[0]=='h') 
+    {
+        //add code for what to do with data in case it is an ID 
+    } 
+    else
+    {
+        //add code for what to do with data in case it is a public key
+    }
+    Serial.print("the received packet is :");
+    Serial.println(received_packet);
+    Serial.print("the received packet size is :");
+    Serial.println(len);
+    //Serial.println(strlen(received_packet));
+    //Serial.println(sizeof(received_packet));
 }
 
 Tiny::ProtoHd  proto(proto_buffer, sizeof(proto_buffer), onFrameIn);
+
+void receive_packet()
+{
+    proto.enableCheckSum(); 
+    proto.beginToSerial();
+    proto.run();
+
+}
+
+
 
 void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {

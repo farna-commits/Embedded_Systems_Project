@@ -38,6 +38,9 @@ enum Packet_Header: char {
   ID_HEADER         = 'h',
   DIFFIE_PUBLIC_KEY = 'p'
 };
+//Haitham: proposed enumeration
+//enum packet_header {ID_HEADER, DIFFIE_PUBLIC_KEY}; 
+ char received_packet[16];
 
 //Functions 
 void AES_encrypt(uint8_t * key, uint8_t * buf );
