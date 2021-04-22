@@ -44,7 +44,7 @@ void AES_encrypt(uint8_t * key, uint8_t * buf );
 void AES_decrypt(uint8_t * key, char * buf); 
 DeserializationError Read_json(StaticJsonDocument<700>, char*); 
 void align_ID_string(int, char a[]);
-void onFrameIn(uint8_t *buf, int len); 
+void onFrameIn(char *buf, int len); 
 void send_packet(uint16_t, char *, Packet_Header); 
 
 
