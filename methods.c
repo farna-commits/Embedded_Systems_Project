@@ -57,7 +57,7 @@ void AES_decrypt(uint8_t * key, char * buf) {
 //----------------------------Communication-----------------------------
 
 /* Function to receive incoming messages from remote side */
-void onFrameIn(uint8_t *buf, int len)
+void onFrameIn(char *buf, int len)
 {
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) received_packet[i]=(char)buf[i];
@@ -97,6 +97,7 @@ void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packe
   proto.enableCheckSum(); 
   proto.beginToSerial();
   packet.clear(); 
+
   packet.put(packet_header_to_send);          //add the packet header as the first byte 
   packet.put(packet_to_send);         //add the data to the packet 
   proto.write(packet);
