@@ -1,3 +1,4 @@
+unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
 // Function ProcessInputMessage
   unsigned long S0; // Sigma0(HashA)  
   unsigned long S1; // Sigma1(HashE)  
@@ -72,21 +73,30 @@
   TempSigma1=((InputHash&0x0000003f)<<32-6)+(InputHash>>6)^((InputHash&0x000007ff)<<32-11)+(InputHash>>11)^((InputHash&0x01ffffff)<<32-25)+(InputHash>>25);
   return TempSigma1;}
 
+
+ char char_tempo0[4],char_tempo1[4],char_tempo2[4],char_tempo3[4],char_tempo4[4], char_tempo5[4], char_tempo6[4], char_tempo7[4];
+ char empty[32]="";
+ char finale[256]="";
 // Function PrintWithLeadingZero
-  unsigned long TempLz;
+  unsigned long TempLz;  
   void PrintWithLeadingZero (unsigned long ReceiveUnsignedLong) {
-    TempLz=ReceiveUnsignedLong&0xf0000000; TempLz=TempLz>>28; Serial.print(TempLz, HEX);
-    TempLz=ReceiveUnsignedLong&0x0f000000; TempLz=TempLz>>24; Serial.print(TempLz, HEX);
-    TempLz=ReceiveUnsignedLong&0x00f00000; TempLz=TempLz>>20; Serial.print(TempLz, HEX);
-    TempLz=ReceiveUnsignedLong&0x000f0000; TempLz=TempLz>>16; Serial.print(TempLz, HEX);
-    TempLz=ReceiveUnsignedLong&0x0000f000; TempLz=TempLz>>12; Serial.print(TempLz, HEX);
-    TempLz=ReceiveUnsignedLong&0x00000f00; TempLz=TempLz>>8; Serial.print(TempLz, HEX);
-    TempLz=ReceiveUnsignedLong&0x000000f0; TempLz=TempLz>>4; Serial.print(TempLz, HEX);
-    TempLz=ReceiveUnsignedLong&0x0000000f; TempLz=TempLz>>0; Serial.print(TempLz, HEX);
+    TempLz=ReceiveUnsignedLong&0xf0000000; TempLz=TempLz>>28; /*Serial.print(TempLz, HEX);*/ tempo0=TempLz;
+    TempLz=ReceiveUnsignedLong&0x0f000000; TempLz=TempLz>>24; /*Serial.print(TempLz, HEX);*/ tempo1=TempLz;
+    TempLz=ReceiveUnsignedLong&0x00f00000; TempLz=TempLz>>20; /*Serial.print(TempLz, HEX);*/ tempo2=TempLz;
+    TempLz=ReceiveUnsignedLong&0x000f0000; TempLz=TempLz>>16; /*Serial.print(TempLz, HEX);*/ tempo3=TempLz;
+    TempLz=ReceiveUnsignedLong&0x0000f000; TempLz=TempLz>>12; /*Serial.print(TempLz, HEX);*/ tempo4=TempLz;
+    TempLz=ReceiveUnsignedLong&0x00000f00; TempLz=TempLz>>8; /*Serial.print(TempLz, HEX);*/  tempo5=TempLz;
+    TempLz=ReceiveUnsignedLong&0x000000f0; TempLz=TempLz>>4; /*Serial.print(TempLz, HEX);*/  tempo6=TempLz;
+    TempLz=ReceiveUnsignedLong&0x0000000f; TempLz=TempLz>>0; /*Serial.print(TempLz, HEX);*/  tempo7=TempLz;
+
+   ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
+   strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);      
+   strcat(finale,empty);
+   memset(&empty[0], 0, sizeof(empty));
 }
 
 
-  void ProcessInputMessage (char * InputString) { 
+  void ProcessInputMessage (char * InputString, char * hashed_string) { 
   // LengthOfInputString = strlen(InputString);  //Length in bytes, max 55 bytes
   LengthOfInputString = 16;  //Length in bytes, max 55 bytes
 
@@ -185,18 +195,21 @@
   Serial.println() ;
   Serial.print("SHA256 hashed output message...") ;
   Serial.println() ;
+  
 
   //Print the result
-  PrintWithLeadingZero(h0);
-  PrintWithLeadingZero(h1);
-  PrintWithLeadingZero(h2);
+  PrintWithLeadingZero(h0); 
+  PrintWithLeadingZero(h1); 
+  PrintWithLeadingZero(h2);  
   PrintWithLeadingZero(h3);
   PrintWithLeadingZero(h4);
   PrintWithLeadingZero(h5);
   PrintWithLeadingZero(h6);
   PrintWithLeadingZero(h7);
+  Serial.print(finale);
+  strcpy(hashed_string, finale);
   Serial.println();
   Serial.print("----------------------------------------------------------------") ;
   Serial.println();
-  
+ 
 }//End
