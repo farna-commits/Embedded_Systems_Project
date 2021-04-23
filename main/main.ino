@@ -59,5 +59,5 @@ void setup() {
 
 //Loop 
 void loop() {
- 
+ proto_door.run();
 }
