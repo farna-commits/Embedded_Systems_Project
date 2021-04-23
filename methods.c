@@ -56,36 +56,64 @@ void AES_decrypt(uint8_t * key, char * buf) {
 
 //----------------------------Communication-----------------------------
 
+Tiny::ProtoHd  proto_database(proto_buffer_database, sizeof(proto_buffer_database), onFrameIn_database);
+Tiny::ProtoHd  proto_door(proto_buffer_door, sizeof(proto_buffer_door), onFrameIn_door);
+
 /* Function to receive incoming messages from remote side */
-void onFrameIn(char *buf, int len)
+void onFrameIn_database(char *buf, int len)
 {
+
+ 
+    Serial.print("the received packet size is :");
+    Serial.println(len);
+    Serial.print("the received packet is :");
     /* Do what you need with receive data here */
-     for (int i=0; i<len; i++) received_packet[i]=(char)buf[i];
-    if(received_packet[0]=='h') 
+     for (int i=0; i<len; i++) Serial.print(buf[i]);
+    if(buf[0]=='h') 
     {
-        //add code for what to do with data in case it is an ID 
+       Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
+      Tiny::Packet<64> packet;
+      packet.clear();
+      packet.put( "Received ID Packet" );    
+      proto_database.write(packet);
     } 
     else
     {
-        //add code for what to do with data in case it is a public key
+        Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
     }
-    Serial.print("the received packet is :");
-    Serial.println(received_packet);
-    Serial.print("the received packet size is :");
-    Serial.println(len);
+    
     //Serial.println(strlen(received_packet));
     //Serial.println(sizeof(received_packet));
 }
 
-Tiny::ProtoHd  proto(proto_buffer, sizeof(proto_buffer), onFrameIn);
-
-void receive_packet()
+void onFrameIn_door(char *buf, int len)
 {
-    proto.enableCheckSum(); 
-    proto.beginToSerial();
-    proto.run();
-
+    /* Do what you need with receive data here */
+    Serial.print("the received packet size is :");
+    Serial.println(len);
+    Serial.print("the received packet is :");
+    /* Do what you need with receive data here */
+     for (int i=0; i<len; i++) Serial.print(buf[i]);
+    // if(buf[0]=='R') 
+    // {
+    //    Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
+    //   proto_database.write("Received ID Packet");
+    // } 
+    // else
+    // {
+    //     Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
+    // }
+    //Serial.println(strlen(received_packet));
+    //Serial.println(sizeof(received_packet));
 }
+
+// void receive_packet()
+// {
+//     proto.enableCheckSum(); 
+//     proto.beginToSerial();
+//     proto.run();
+
+// }
 
 
 
@@ -94,12 +122,12 @@ void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packe
     packetSize = MAX_BUFFER_SIZE;
   }
   Tiny::Packet<16> packet; 
-  proto.enableCheckSum(); 
-  proto.beginToSerial();
+  proto_door.enableCheckSum(); 
+  proto_door.beginToSerial();
   packet.clear(); 
 
   packet.put(packet_header_to_send);          //add the packet header as the first byte 
   packet.put(packet_to_send);         //add the data to the packet 
-  proto.write(packet);
+  proto_door.write(packet);
   
 }
