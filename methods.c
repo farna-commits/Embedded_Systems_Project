@@ -1,8 +1,7 @@
 #include "methods.h"
 
 #define GENERATE_KEY(X, Y)    Curve25519::dh1(X, Y)
-bool ID_done = false;
-bool ID_ack_done = false;
+
 void read_ID() {
   int i = 0;
   while (i < ID_SIZE)
@@ -47,18 +46,10 @@ void AES_decrypt(uint8_t * key, char * buf) {
   Serial.print(buf[2]);
   Serial.print(buf[3]);
 }
-// void add_user() {
-//   read_ID();
-//   for(int i=0 i< ID_SIZE; i++)
-//     json[strlen(json)-(3-i)]=array_ID[i];
-//   strcat(json, array_ID);
-
-// }
-
 //----------------------------Communication-----------------------------
 
-Tiny::ProtoHd  proto_database(proto_buffer_database, sizeof(proto_buffer_database), onFrameIn_database);
-Tiny::ProtoHd  proto_door(proto_buffer_door, sizeof(proto_buffer_door), onFrameIn_door);
+Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  onFrameIn_database);
+Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      onFrameIn_door);
 
 /* Function to receive incoming messages from remote side */
 void onFrameIn_database(char *buf, int len)
@@ -70,16 +61,16 @@ void onFrameIn_database(char *buf, int len)
     Serial.print("the received packet is :");
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) Serial.print(buf[i]);
-    if(buf[0]=='h') 
+    if(buf[0]== ID_HEADER) 
     {
       Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
       Tiny::Packet<64> packet;
       packet.clear();
       packet.put( "Received ID Packet" );    
-      ID_done = true;
+      flag_ID_done = true;
       proto_database.write(packet);
     } 
-    else if(buf[0]=='p' && ID_done == true)
+    else if(buf[0] == DIFFIE_PUBLIC_KEY && flag_ID_done == true)
     {
       Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
       Tiny::Packet<64> packet;
@@ -88,8 +79,6 @@ void onFrameIn_database(char *buf, int len)
       proto_database.write(packet);
     }
     
-    //Serial.println(strlen(received_packet));
-    //Serial.println(sizeof(received_packet));
 }
 
 void onFrameIn_door(char *buf, int len)
@@ -100,13 +89,13 @@ void onFrameIn_door(char *buf, int len)
     Serial.print("the received packet is :");
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) Serial.print(buf[i]);
-    if(buf[0]=='R') 
+    if(buf[0]==ACK_ID) 
     {
       Serial.println("The database received the ID packet"); //add code for what to do with data in case it is an ID 
       send_packet(32, "Public Key", DIFFIE_PUBLIC_KEY);
-      ID_ack_done = true;
+      flag_ID_ack_done = true;
     } 
-    else if(buf[0]=='K' && ID_ack_done == true)
+    else if(buf[0]==ACK_KEY && flag_ID_ack_done == true)
     {
         Serial.println("The database received the key packet");//add code for what to do with data in case it is a public key
     
