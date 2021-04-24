@@ -37,11 +37,15 @@ uint8_t proto_buffer_door[MAX_BUFFER_SIZE];
 uint8_t proto_buffer_database[MAX_BUFFER_SIZE]; 
 enum Packet_Header: char {
   ID_HEADER         = 'h',
-  DIFFIE_PUBLIC_KEY = 'p'
+  DIFFIE_PUBLIC_KEY = 'p',
+  ACK_ID            = 'R', 
+  ACK_KEY           = 'K'
 };
 //Haitham: proposed enumeration
 //enum packet_header {ID_HEADER, DIFFIE_PUBLIC_KEY}; 
- char received_packet[16];
+char received_packet[16];
+bool flag_ID_done = false;
+bool flag_ID_ack_done = false;
 
 //Functions 
 void AES_encrypt(uint8_t * key, uint8_t * buf );
