@@ -1,7 +1,8 @@
 #include "methods.h"
 
 #define GENERATE_KEY(X, Y)    Curve25519::dh1(X, Y)
-
+bool ID_done = false;
+bool ID_ack_done = false;
 void read_ID() {
   int i = 0;
   while (i < ID_SIZE)
@@ -71,15 +72,20 @@ void onFrameIn_database(char *buf, int len)
      for (int i=0; i<len; i++) Serial.print(buf[i]);
     if(buf[0]=='h') 
     {
-       Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
+      Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
       Tiny::Packet<64> packet;
       packet.clear();
       packet.put( "Received ID Packet" );    
+      ID_done = true;
       proto_database.write(packet);
     } 
-    else
+    else if(buf[0]=='p' && ID_done == true)
     {
-        Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
+      Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
+      Tiny::Packet<64> packet;
+      packet.clear();
+      packet.put( "Key Packet Received" );    
+      proto_database.write(packet);
     }
     
     //Serial.println(strlen(received_packet));
@@ -94,17 +100,18 @@ void onFrameIn_door(char *buf, int len)
     Serial.print("the received packet is :");
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) Serial.print(buf[i]);
-    // if(buf[0]=='R') 
-    // {
-    //    Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
-    //   proto_database.write("Received ID Packet");
-    // } 
-    // else
-    // {
-    //     Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
-    // }
-    //Serial.println(strlen(received_packet));
-    //Serial.println(sizeof(received_packet));
+    if(buf[0]=='R') 
+    {
+      Serial.println("The database received the ID packet"); //add code for what to do with data in case it is an ID 
+      send_packet(32, "Public Key", DIFFIE_PUBLIC_KEY);
+      ID_ack_done = true;
+    } 
+    else if(buf[0]=='K' && ID_ack_done == true)
+    {
+        Serial.println("The database received the key packet");//add code for what to do with data in case it is a public key
+    
+    }
+   
 }
 
 // void receive_packet()
