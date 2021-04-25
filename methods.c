@@ -41,10 +41,8 @@ void AES_encrypt(uint8_t * key, char * buf ) {
 void AES_decrypt(uint8_t * key, char * buf) {
   aes128_dec_single(key, buf);
   Serial.print("Decrypted ID:");
-  Serial.print(buf[0]);
-  Serial.print(buf[1]);
-  Serial.print(buf[2]);
-  Serial.print(buf[3]);
+  for (int i = 0; i < strlen(buf); i++) Serial.print(buf[i]); 
+  
 }
 //----------------------------Communication-----------------------------
 
