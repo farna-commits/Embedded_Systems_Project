@@ -18,17 +18,20 @@ void setup() {
   // int ID_example = 0; 
   // ID_string = (char*)calloc(16, sizeof(char));                        //allocate memory, and automatically freed 
 
-  Read_json(doc,json);
+  
   Serial.println();                                                //read json file 
   // ID_example = doc["ID"][9];                                         //fetch ID from json database 
   // Serial.print("Fetching an ID from database as an example: ");
   // Serial.println(ID_example);  
   // align_ID_string(ID_example, ID_string);                             //concatinate with 12 0s to align for aes function                                           
   DH1(public_key, secret_key);                               //call macro that generates key using Diffie Hellman 
+  Serial.println(strlen(public_key));
   uint16_t packetsize_dh = 32; 
   Serial.print("Public key to be sent: ");
+  Serial.println("Public key 1 printing: ");
+  for (int i = 0; i < 32; i++) Serial.print(public_key[i]);
   send_packet(packetsize_dh, public_key, DIFFIE_PUBLIC_KEY);
-
+  Read_json(doc,json);
   // AES_encrypt(public_key,ID_string);                                  //encrypt using aes128 
   // AES_decrypt(public_key, ID_string);                                 //decryption test 
 

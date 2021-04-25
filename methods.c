@@ -68,7 +68,7 @@ void onFrameIn_database(char *buf, int len)
       packet.put( "Received ID Packet" );          
       proto_database.write(packet);
       char * buf_copy;
-      buf_copy = (char*)calloc(16, sizeof(char)); 
+      buf_copy = (char*)calloc(32, sizeof(char)); 
       for (int i = 1; i < len; i++)
       {
         strcat(buf_copy[i], buf[i]);
@@ -87,7 +87,7 @@ void onFrameIn_database(char *buf, int len)
 
       DH1(public_key2, secret_key2); 
       char * buf_copy;
-      buf_copy = (char*)calloc(16, sizeof(char)); 
+      buf_copy = (char*)calloc(32, sizeof(char)); 
       for (int i = 1; i < len; i++)
       {
         strcat(buf_copy[i], buf[i]);
@@ -115,15 +115,20 @@ void onFrameIn_door(char *buf, int len)
       send_packet(32, "Public Key", DIFFIE_PUBLIC_KEY);
       flag_ID_ack_done = true;
       int ID_example = 0; 
-      Read_json(doc,json);                                                //read json file 
+      //Read_json(doc,json);                                                //read json file 
       ID_example = doc["ID"][9];                                         //fetch ID from json database 
       Serial.print("Fetching an ID from database as an example: ");
       Serial.println(ID_example);  
       char * ID_string;
-      ID_string = (char*)calloc(16, sizeof(char));  
+      ID_string = (char*)calloc(32, sizeof(char));  
+      // char ID_string[32]; 
       align_ID_string(ID_example, ID_string);  
       AES_encrypt(public_key,ID_string); 
-      send_packet(16, ID_string, ID_HEADER);
+      Serial.println("ana hena yabona");
+      uint16_t size_yabona = 32; 
+      Serial.println(strlen(ID_string));
+      Serial.println(ID_string);
+      send_packet(size_yabona, ID_string, ID_HEADER);
     } 
     else if(buf[0]==ACK_ID && flag_ID_ack_done == true)
     {
@@ -147,13 +152,31 @@ void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packe
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
-  Tiny::Packet<16> packet; 
+  Tiny::Packet<32> packet; 
   proto_door.enableCheckSum(); 
   proto_door.beginToSerial();
   packet.clear(); 
 
   packet.put(packet_header_to_send);          //add the packet header as the first byte 
   packet.put(packet_to_send);         //add the data to the packet 
+  proto_door.write(packet);
+  
+}
+
+void send_packet(uint16_t packetSize, uint8_t packet_to_send[32], Packet_Header packet_header_to_send) {
+  if (packetSize > MAX_BUFFER_SIZE) {
+    packetSize = MAX_BUFFER_SIZE;
+  }
+  Serial.println("men gowa: ");
+  for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send[i]);
+  Tiny::Packet<32> packet; 
+  proto_door.enableCheckSum(); 
+  proto_door.beginToSerial();
+  packet.clear(); 
+  Serial.println();
+  packet.put(packet_header_to_send);          //add the packet header as the first byte 
+  for (int i = 0; i < packetSize; i++) packet.put(packet_to_send[i]);
+  
   proto_door.write(packet);
   
 }

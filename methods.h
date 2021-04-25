@@ -48,8 +48,8 @@ bool flag_ID_done = false;
 bool flag_ID_ack_done = false;
 uint8_t public_key2[16]   = {};
 uint8_t secret_key2[16]   = {}; 
-uint8_t public_key[16]    = {};
-uint8_t secret_key[16]    = {}; 
+uint8_t public_key[32]    = {};
+uint8_t secret_key[32]    = {}; 
 
 
 //Functions 
