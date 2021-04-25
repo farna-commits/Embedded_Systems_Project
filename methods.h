@@ -46,6 +46,11 @@ enum Packet_Header: char {
 char received_packet[16];
 bool flag_ID_done = false;
 bool flag_ID_ack_done = false;
+uint8_t public_key2[16]   = {};
+uint8_t secret_key2[16]   = {}; 
+uint8_t public_key[16]    = {};
+uint8_t secret_key[16]    = {}; 
+
 
 //Functions 
 void AES_encrypt(uint8_t * key, uint8_t * buf );
