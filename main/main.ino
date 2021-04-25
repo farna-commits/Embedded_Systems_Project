@@ -14,15 +14,16 @@ void setup() {
   while (!Serial) continue;
   Serial.setTimeout(0);
   //variables 
-  char * ID_string;
-  int ID_example = 0; 
-  ID_string = (char*)calloc(16, sizeof(char));                        //allocate memory, and automatically freed 
+  // char * ID_string;
+  // int ID_example = 0; 
+  // ID_string = (char*)calloc(16, sizeof(char));                        //allocate memory, and automatically freed 
 
-  Read_json(doc,json);                                                //read json file 
-  ID_example = doc["ID"][9];                                         //fetch ID from json database 
-  Serial.print("Fetching an ID from database as an example: ");
-  Serial.println(ID_example);  
-  align_ID_string(ID_example, ID_string);                             //concatinate with 12 0s to align for aes function                                           
+  Read_json(doc,json);
+  Serial.println();                                                //read json file 
+  // ID_example = doc["ID"][9];                                         //fetch ID from json database 
+  // Serial.print("Fetching an ID from database as an example: ");
+  // Serial.println(ID_example);  
+  // align_ID_string(ID_example, ID_string);                             //concatinate with 12 0s to align for aes function                                           
   DH1(public_key, secret_key);                               //call macro that generates key using Diffie Hellman 
   uint16_t packetsize_dh = 32; 
   Serial.print("Public key to be sent: ");

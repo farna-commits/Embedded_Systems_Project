@@ -65,9 +65,17 @@ void onFrameIn_database(char *buf, int len)
       Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
       Tiny::Packet<64> packet;
       packet.clear();
-      packet.put( "Received ID Packet" );    
-      flag_ID_done = true;
+      packet.put( "Received ID Packet" );          
       proto_database.write(packet);
+      char * buf_copy;
+      buf_copy = (char*)calloc(16, sizeof(char)); 
+      for (int i = 1; i < len; i++)
+      {
+        strcat(buf_copy[i], buf[i]);
+      }
+      Serial.println(buf_copy);
+      AES_decrypt(public_key, buf_copy);
+
     } 
     else if(buf[0] == DIFFIE_PUBLIC_KEY)
     {
@@ -86,7 +94,9 @@ void onFrameIn_database(char *buf, int len)
       }
       Serial.println(buf_copy);
       DH2(buf_copy, secret_key2);
-      
+      flag_ID_done = true;
+
+
     }
     
 }
@@ -99,13 +109,23 @@ void onFrameIn_door(char *buf, int len)
     Serial.print("the received packet is :");
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) Serial.print(buf[i]);
-    if(buf[0]==ACK_ID) 
+    if(buf[0]==ACK_KEY) 
     {
-      Serial.println("The database received the ID packet"); //add code for what to do with data in case it is an ID 
+      Serial.println("The database received the Key packet"); //add code for what to do with data in case it is an ID 
       send_packet(32, "Public Key", DIFFIE_PUBLIC_KEY);
       flag_ID_ack_done = true;
+      int ID_example = 0; 
+      Read_json(doc,json);                                                //read json file 
+      ID_example = doc["ID"][9];                                         //fetch ID from json database 
+      Serial.print("Fetching an ID from database as an example: ");
+      Serial.println(ID_example);  
+      char * ID_string;
+      ID_string = (char*)calloc(16, sizeof(char));  
+      align_ID_string(ID_example, ID_string);  
+      AES_encrypt(public_key,ID_string); 
+      send_packet(16, ID_string, ID_HEADER);
     } 
-    else if(buf[0]==ACK_KEY && flag_ID_ack_done == true)
+    else if(buf[0]==ACK_ID && flag_ID_ack_done == true)
     {
         Serial.println("The database received the key packet");//add code for what to do with data in case it is a public key
     
