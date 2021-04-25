@@ -1,6 +1,7 @@
 #include "methods.h"
 
-#define GENERATE_KEY(X, Y)    Curve25519::dh1(X, Y)
+#define DH1(X, Y)    Curve25519::dh1(X, Y)
+#define DH2(X, Y)    Curve25519::dh2(X, Y)
 
 void read_ID() {
   int i = 0;
@@ -59,7 +60,7 @@ void onFrameIn_database(char *buf, int len)
     Serial.print("the received packet is :");
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) Serial.print(buf[i]);
-    if(buf[0]== ID_HEADER) 
+    if(buf[0]== ID_HEADER && flag_ID_done == true) 
     {
       Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
       Tiny::Packet<64> packet;
@@ -68,13 +69,24 @@ void onFrameIn_database(char *buf, int len)
       flag_ID_done = true;
       proto_database.write(packet);
     } 
-    else if(buf[0] == DIFFIE_PUBLIC_KEY && flag_ID_done == true)
+    else if(buf[0] == DIFFIE_PUBLIC_KEY)
     {
       Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
       Tiny::Packet<64> packet;
       packet.clear();
       packet.put( "Key Packet Received" );    
       proto_database.write(packet);
+
+      DH1(public_key2, secret_key2); 
+      char * buf_copy;
+      buf_copy = (char*)calloc(16, sizeof(char)); 
+      for (int i = 1; i < len; i++)
+      {
+        strcat(buf_copy[i], buf[i]);
+      }
+      Serial.println(buf_copy);
+      DH2(buf_copy, secret_key2);
+      
     }
     
 }
