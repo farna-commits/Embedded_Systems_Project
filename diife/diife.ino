@@ -10,62 +10,45 @@
 
 void setup() {
   Serial.begin(9600);
+  while (!Serial) continue;
+  Serial.setTimeout(0);
+  uint8_t public_key1[16] = {};
+  uint8_t public_key2[16] = {};
+  uint8_t secret_key1[16] = {};    
+  uint8_t secret_key2[16] = {};  
+  int ID_example = 0; 
   char * Original;
   Original = (char*)calloc(16, sizeof(char));    
-  Original = "Hell"; 
-  // char Original[16] = "Helloooooooooo";
-
-  // char * Decrypted;
-  // Decrypted = (char*)calloc(16, sizeof(char)); 
-  char Decrypted[16];
-  // put your setup code here, to run once:
-    uint8_t public_key1[16] = {};
-    uint8_t secret_key1[16] = {};    
-    uint8_t secret_key2[16] = {};  
-    int ID_example = 0; 
-  //align_ID_string(ID_example, Original); 
-    // Generate the secret value "f" and the public value "k".
-    Curve25519::dh1(public_key1, secret_key1);
-    AES_encrypt(public_key1,Original); 
-    // Serial.println(strlen(Original));
-    AES_decrypt(public_key1, Original);  
-    Serial.println(Original);
-    // Serial.println("Public key 1 printing: ");
-    // for (int i = 0; i < 16; i++) Serial.print(public_key1[i]);
-    // Serial.println();
-    // Serial.println("Secret key 1 printing: ");
-    // for (int i = 0; i < 16; i++) Serial.print(secret_key1[i]);
-    // Serial.println();
-    // // Generate the shared secret in "k" using the previous secret value "f".
-    // if (!Curve25519::dh2(public_key1, secret_key1)) {
-    //     // The received "k" value was invalid - abort the session.
-    // Serial.println("encryption failed");
-    // }
-    // // The "k" value can now be used to generate session keys for encryption.
-    // Serial.println("Key generated successfully");
-
+  char * Decrypted;
+  Decrypted = (char*)calloc(16, sizeof(char)); 
+  char * Original_copy;
+  Original_copy = (char*)calloc(16, sizeof(char)); 
+  strcpy(Original, "Hello osama");
+  strcpy(Original_copy, Original);
       
-    
+  //1st key 
+  Curve25519::dh1(public_key1, secret_key1);
+  Serial.println("Public key 1 printing: ");
+  for (int i = 0; i < 16; i++) Serial.print(public_key1[i]);
+  Serial.println();
+  Serial.println("Secret key 1 printing: ");
+  for (int i = 0; i < 16; i++) Serial.print(secret_key1[i]);
+  Serial.println();
+
+  //Rx
+  Curve25519::dh1(public_key2, secret_key2);
+  if (!Curve25519::dh2(public_key1, secret_key2)) Serial.println("encryption failed");
+  Serial.println("Key generated successfully");
 
 
-    // Curve25519::dh1(public_key1, secret_key2);
-    // Serial.println("Public key 2 printing: ");
-    // for (int i = 0; i < 16; i++) Serial.print(public_key1[i]);
-    // Serial.println();
-    // Serial.println("Secret key 2 printing: ");
-    // for (int i = 0; i < 16; i++) Serial.print(secret_key2[i]);
-    // Serial.println();
+  AES_encrypt(public_key1,Original_copy); 
+  AES_decrypt(public_key1, Original_copy);  
+  Serial.println();
+  strcpy(Decrypted, Original_copy);
+  Serial.println("Decryption from main: ");
+  Serial.println(Decrypted);
 
-    // // Generate the shared secret in "k" using the previous secret value "f".
-    // if (!Curve25519::dh2(public_key1, secret_key2)) {
-    //     // The received "k" value was invalid - abort the session.
-    // Serial.println("encryption failed");
-    // }
-    // // The "k" value can now be used to generate session keys for encryption.
-    // Serial.println("Key generated successfully");
 
-    // AES_decrypt(public_key1, Decrypted);  
-    // Serial.println(Decrypted);
 }
 
 void loop() {
