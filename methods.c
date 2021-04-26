@@ -167,15 +167,6 @@ void onFrameIn_door(char *buf, int len)
    
 }
 
-// void receive_packet()
-// {
-//     proto.enableCheckSum(); 
-//     proto.beginToSerial();
-//     proto.run();
-
-// }
-
-
 
 void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
@@ -192,7 +183,7 @@ void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packe
   
 }
 
-void send_packet(uint16_t packetSize, uint8_t packet_to_send[32], Packet_Header packet_header_to_send) {
+void send_packet(uint16_t packetSize, uint8_t packet_to_send[64], Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
@@ -204,8 +195,8 @@ void send_packet(uint16_t packetSize, uint8_t packet_to_send[32], Packet_Header 
   packet.clear(); 
   Serial.println();
   packet.put(packet_header_to_send);          //add the packet header as the first byte
-  char packet_to_send_char[32]; 
-  uint8_t packet_to_send_int[32]; 
+  char packet_to_send_char[64]; 
+  uint8_t packet_to_send_int[64]; 
   memcpy(packet_to_send_char, packet_to_send, strlen(packet_to_send)+1);
   Serial.println("packet_to_send_char: ");
   Serial.println(packet_to_send_char);
