@@ -83,6 +83,7 @@ void onFrameIn_database(char *buf, int len)
       Serial.println("Decryption: ");
       // uint8_t public_key_uint2[32]; 
       // memcpy(public_key_uint2, public_key, strlen(public_key)+1);
+      DH2(buf_copy_key2, secret_key_database);
       aes128_dec_single(buf_copy_key2, buf_copy);
       Serial.print("Decrypted ID:");
       for (int i = 0; i < strlen(buf_copy); i++) Serial.print(buf_copy[i]); 
@@ -101,7 +102,7 @@ void onFrameIn_database(char *buf, int len)
     {
       Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
       Serial.println();
-      DH1(public_key2, secret_key2); 
+      DH1(public_key_database, secret_key_database); 
       Serial.println("here");
       // char * buf_copy;
       // buf_copy = (char*)calloc(64, sizeof(char)); 
@@ -124,14 +125,15 @@ void onFrameIn_database(char *buf, int len)
       // Serial.println("Buf copy Now: ");
       for (int i = 0; i < len - 1; i++) Serial.print(buf_copy_key[i]);
       Serial.println();
-      DH2(buf_copy_key2, secret_key2);
+      //DH2(buf_copy_key2, secret_key_database);
       Serial.println("DH2 Done");
       flag_ID_done = true;
       Serial.println((flag_ID_done == true) ? "True" : "False");
-      Tiny::Packet<64> packet;
-      packet.clear();
-      packet.put( "Key Packet Received" );    
-      proto_database.write(packet);
+
+      send_packet(32, public_key_database, DIFFIE_PUBLIC_KEY);
+
+      //packet.put( "Key Packet Received" );    
+      //proto_database.write(packet);
 
 
     }
@@ -152,7 +154,7 @@ void onFrameIn_door(char *buf, int len)
     Serial.println((flag_keep_sending_ID == true) ? "True" : "False");
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) Serial.print(buf[i]);
-    if(buf[0]==ACK_KEY) 
+    if(buf[0]==DIFFIE_PUBLIC_KEY) 
     {
       Serial.println("The database received the Key packet"); //add code for what to do with data in case it is an ID 
       //send_packet(32, "Public Key", DIFFIE_PUBLIC_KEY);
@@ -167,7 +169,9 @@ void onFrameIn_door(char *buf, int len)
       // char ID_string[32]; 
       align_ID_string(ID_example, ID_string);  
       uint8_t public_key_uint[32]; 
-      memcpy(public_key_uint, public_key, strlen(public_key)+1);
+      //memcpy(public_key_uint, public_key_door, strlen(public_key_door)+1);
+      for (int i = 0; i < len - 1; i++) public_key_uint[i] = buf[i+1];
+      DH2(public_key_uint,secret_key_door);
       AES_encrypt(public_key_uint,ID_string); 
       Serial.println("ana hena yabona");
       uint16_t size_yabona = 64; 
