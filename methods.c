@@ -73,14 +73,22 @@ void onFrameIn_database(char *buf, int len)
       
       char * buf_copy;
       buf_copy = (char*)calloc(64, sizeof(char)); 
-      Serial.println("Copying buf: ");
+      Serial.println("the encrypted data to be decrypted: ");
       for (int i = 0; i < len-1; i++) buf_copy[i] = buf[i+1];
       for (int i = 0; i < len-1; i++) Serial.print(buf_copy[i]);
-     
+     Serial.println();
+     Serial.println("the key used to decrypt: ");
+      for (int i = 0; i < len-1; i++) Serial.print(buf_copy_key2[i]);
+      Serial.println();
       Serial.println("Decryption: ");
       // uint8_t public_key_uint2[32]; 
       // memcpy(public_key_uint2, public_key, strlen(public_key)+1);
-      AES_decrypt(buf_copy_key2, buf_copy);
+      aes128_dec_single(buf_copy_key2, buf_copy);
+      Serial.print("Decrypted ID:");
+      for (int i = 0; i < strlen(buf_copy); i++) Serial.print(buf_copy[i]); 
+  
+     // AES_decrypt(buf_copy_key2, buf_copy);
+
 
       Tiny::Packet<64> packet;
       packet.clear();
