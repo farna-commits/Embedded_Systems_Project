@@ -77,13 +77,14 @@ void onFrameIn_database(char *buf, int len)
       for (int i = 0; i < len-1; i++) buf_copy[i] = buf[i+1];
       for (int i = 0; i < len-1; i++) Serial.print(buf_copy[i]);
      Serial.println();
-     Serial.println("the key used to decrypt: ");
-      for (int i = 0; i < len-1; i++) Serial.print(buf_copy_key2[i]);
+    
       Serial.println();
       Serial.println("Decryption: ");
       // uint8_t public_key_uint2[32]; 
       // memcpy(public_key_uint2, public_key, strlen(public_key)+1);
       DH2(buf_copy_key2, secret_key_database);
+      Serial.println("the key used to decrypt: ");
+      for (int i = 0; i < len-1; i++) Serial.print(buf_copy_key2[i]);
       aes128_dec_single(buf_copy_key2, buf_copy);
       Serial.print("Decrypted ID:");
       for (int i = 0; i < strlen(buf_copy); i++) Serial.print(buf_copy[i]); 
@@ -172,6 +173,8 @@ void onFrameIn_door(char *buf, int len)
       //memcpy(public_key_uint, public_key_door, strlen(public_key_door)+1);
       for (int i = 0; i < len - 1; i++) public_key_uint[i] = buf[i+1];
       DH2(public_key_uint,secret_key_door);
+      Serial.println("EL MAFROOD DA ABG:");
+      for (int i = 0; i < len; i++) Serial.print(public_key_uint[i]); 
       AES_encrypt(public_key_uint,ID_string); 
       Serial.println("ana hena yabona");
       uint16_t size_yabona = 64; 
