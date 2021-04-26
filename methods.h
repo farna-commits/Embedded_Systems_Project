@@ -44,15 +44,17 @@ enum Packet_Header: char {
 //Haitham: proposed enumeration
 //enum packet_header {ID_HEADER, DIFFIE_PUBLIC_KEY}; 
 char received_packet[16];
-bool flag_ID_done = false;
+bool flag_key_done = false;
 bool flag_ID_ack_done = false;
 bool flag_keep_sending_ID = false;
-uint8_t public_key_database [64]   = {};
-uint8_t secret_key_database [64]   = {}; 
-uint8_t public_key_door     [64]   = {};
-uint8_t secret_key_door     [64]   = {}; 
-uint8_t buf_copy_key        [64]   = {};
-uint8_t buf_copy_key2       [64]   = {};
+const uint8_t KEY_SIZE = 16;
+uint8_t public_key_database [KEY_SIZE]   = {};
+uint8_t secret_key_database [KEY_SIZE]   = {}; 
+uint8_t public_key_door     [KEY_SIZE]   = {};
+uint8_t secret_key_door     [KEY_SIZE]   = {}; 
+uint8_t public_key_door_copy   [KEY_SIZE]   = {};
+uint8_t buf_copy_key2       [KEY_SIZE]   = {};
+
 
 
 //Functions 
