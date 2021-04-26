@@ -64,7 +64,9 @@ DeserializationError Read_json(StaticJsonDocument<700>, char*);
 void align_ID_string(int, char a[]);
 void onFrameIn_database(char *buf, int len); 
 void onFrameIn_door(char *buf, int len); 
-void send_packet(uint16_t, char *, Packet_Header); 
+void send_packet_door(uint16_t, char *, Packet_Header); 
+void send_packet_database(uint16_t, char *, Packet_Header); 
+
 
 
 #ifdef __cplusplus

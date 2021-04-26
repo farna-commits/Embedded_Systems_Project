@@ -147,7 +147,7 @@ void onFrameIn_door(char *buf, int len){
 
 
               //Print the encrypted data
-              Serial.println("The encrypted ID is: ")
+              Serial.println("The encrypted ID is: ");
               for (int i = 0; i < len; i++) Serial.print(ID_string[i]);
 
               // Send the encrypted data
