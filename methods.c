@@ -58,33 +58,36 @@ void onFrameIn_database(char *buf, int len)
     Serial.print("the received packet size is :");
     Serial.println(len);
     Serial.print("the received packet is :");
+    Serial.println();
+    Serial.println("Printing flags: ");
+    Serial.print("flag ID: ");
+    Serial.println((flag_ID_done == true) ? "True" : "False");
+    Serial.print("flag keep sending ID: ");
+    Serial.println((flag_keep_sending_ID == true) ? "True" : "False");
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) Serial.print(buf[i]);
     if(buf[0]== ID_HEADER && flag_ID_done == true) 
     {
       Serial.println("Here in ID if");
       Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
+      
+      char * buf_copy;
+      buf_copy = (char*)calloc(64, sizeof(char)); 
+      Serial.println("Copying buf: ");
+      for (int i = 0; i < len; i++) buf_copy[i] = buf[i];
+      for (int i = 0; i < len; i++) Serial.print(buf_copy[i]);
+      Serial.println("Decryption: ");
+      AES_decrypt(public_key, buf_copy);
+
       Tiny::Packet<64> packet;
       packet.clear();
       packet.put( "Received ID Packet" );          
       proto_database.write(packet);
-      char * buf_copy;
-      buf_copy = (char*)calloc(64, sizeof(char)); 
-      for (int i = 1; i < len; i++)
-      {
-        strcat(buf_copy[i], buf[i]);
-      }
-      Serial.println(buf_copy);
-      AES_decrypt(public_key, buf_copy);
 
     } 
     else if(buf[0] == DIFFIE_PUBLIC_KEY && flag_ID_done == false)
     {
       Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
-      Tiny::Packet<64> packet;
-      packet.clear();
-      packet.put( "Key Packet Received" );    
-      proto_database.write(packet);
       Serial.println();
       DH1(public_key2, secret_key2); 
       Serial.println("here");
@@ -105,6 +108,10 @@ void onFrameIn_database(char *buf, int len)
       Serial.println("DH2 Done");
       flag_ID_done = true;
       Serial.println((flag_ID_done == true) ? "True" : "False");
+      Tiny::Packet<64> packet;
+      packet.clear();
+      packet.put( "Key Packet Received" );    
+      proto_database.write(packet);
 
 
     }
@@ -117,6 +124,12 @@ void onFrameIn_door(char *buf, int len)
     Serial.print("the received packet size is :");
     Serial.println(len);
     Serial.print("the received packet is :");
+    Serial.println();
+    Serial.println("Printing flags: ");
+    Serial.print("flag ID: ");
+    Serial.println((flag_ID_done == true) ? "True" : "False");
+    Serial.print("flag keep sending ID: ");
+    Serial.println((flag_keep_sending_ID == true) ? "True" : "False");
     /* Do what you need with receive data here */
      for (int i=0; i<len; i++) Serial.print(buf[i]);
     if(buf[0]==ACK_KEY) 
@@ -137,8 +150,9 @@ void onFrameIn_door(char *buf, int len)
       Serial.println("ana hena yabona");
       uint16_t size_yabona = 64; 
       Serial.println(strlen(ID_string));
-      Serial.println(ID_string);
+      for (int i = 0; i < len; i++) Serial.print(ID_string[i]);
       send_packet(size_yabona, ID_string, ID_HEADER);
+      
     } 
     else if(buf[0]==ACK_ID && flag_ID_ack_done == true)
     {
