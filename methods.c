@@ -170,12 +170,18 @@ void onFrameIn_door(char *buf, int len)
       // char ID_string[32]; 
       align_ID_string(ID_example, ID_string);  
       uint8_t public_key_uint[32]; 
+
+      uint8_t public_key_uint_copy[32]; 
       //memcpy(public_key_uint, public_key_door, strlen(public_key_door)+1);
       for (int i = 0; i < len - 1; i++) public_key_uint[i] = buf[i+1];
+      Serial.println("EL MAFROOD DA el key el gayeli men database:");
+      for (int i = 0; i < len-2; i++) public_key_uint_copy[i] = public_key_uint[i+1];
+
+      for (int i = 0; i < len; i++) Serial.print(public_key_uint_copy[i]); 
       DH2(public_key_uint,secret_key_door);
       Serial.println("EL MAFROOD DA ABG:");
-      for (int i = 0; i < len; i++) Serial.print(public_key_uint[i]); 
-      AES_encrypt(public_key_uint,ID_string); 
+      for (int i = 0; i < len; i++) Serial.print(public_key_uint_copy[i]); 
+      AES_encrypt(public_key_uint_copy,ID_string); 
       Serial.println("ana hena yabona");
       uint16_t size_yabona = 64; 
       Serial.println(strlen(ID_string));

@@ -47,12 +47,12 @@ char received_packet[16];
 bool flag_ID_done = false;
 bool flag_ID_ack_done = false;
 bool flag_keep_sending_ID = false;
-uint8_t public_key_database[64]   = {};
-uint8_t secret_key_database[64]   = {}; 
-uint8_t public_key_door[64]       = {};
-uint8_t secret_key_door[64]       = {}; 
-uint8_t buf_copy_key[64]          = {};
-uint8_t buf_copy_key2[64]         = {};
+uint8_t public_key_database [256]   = {};
+uint8_t secret_key_database [256]   = {}; 
+uint8_t public_key_door     [256]   = {};
+uint8_t secret_key_door     [256]   = {}; 
+uint8_t buf_copy_key        [256]   = {};
+uint8_t buf_copy_key2       [256]   = {};
 
 
 //Functions 
