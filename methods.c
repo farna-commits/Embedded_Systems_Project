@@ -76,10 +76,11 @@ void onFrameIn_database(char *buf, int len)
       Serial.println("Copying buf: ");
       for (int i = 0; i < len-1; i++) buf_copy[i] = buf[i+1];
       for (int i = 0; i < len-1; i++) Serial.print(buf_copy[i]);
+     
       Serial.println("Decryption: ");
       // uint8_t public_key_uint2[32]; 
       // memcpy(public_key_uint2, public_key, strlen(public_key)+1);
-      AES_decrypt(buf_copy_key, buf_copy);
+      AES_decrypt(buf_copy_key2, buf_copy);
 
       Tiny::Packet<64> packet;
       packet.clear();
@@ -101,13 +102,20 @@ void onFrameIn_database(char *buf, int len)
       Serial.println("Copying buf: ");
       for (int i = 0; i < len - 1; i++) buf_copy_key[i] = buf[i+1];
       Serial.println("Copy loop done");
+       Serial.println("sham3a Debugger: ");
+      for (int i = 0; i < len; i++) Serial.print(buf[i]);
+      Serial.println();
+
+      for (int i = 0; i < len-2; i++) buf_copy_key2[i] = buf_copy_key[i+1];
+      Serial.println("Farna Debugger: ");
+       for (int i = 0; i < len-2; i++) Serial.print(buf_copy_key2[i]); Serial.println();
       //Serial.println(buf_copy);
       // Serial.println("Buf Now: ");
       // for (int i = 0; i < len; i++) Serial.print(buf[i]);
       // Serial.println("Buf copy Now: ");
       for (int i = 0; i < len - 1; i++) Serial.print(buf_copy_key[i]);
       Serial.println();
-      DH2(buf_copy_key, secret_key2);
+      DH2(buf_copy_key2, secret_key2);
       Serial.println("DH2 Done");
       flag_ID_done = true;
       Serial.println((flag_ID_done == true) ? "True" : "False");
