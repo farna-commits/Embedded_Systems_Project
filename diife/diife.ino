@@ -12,27 +12,27 @@ void setup() {
   Serial.begin(9600);
   while (!Serial) continue;
   Serial.setTimeout(0);
-  uint8_t public_key1[16] = {};
-  uint8_t public_key2[16] = {};
-  uint8_t secret_key1[16] = {};    
-  uint8_t secret_key2[16] = {};  
+  uint8_t public_key1[64] = {};
+  uint8_t public_key2[64] = {};
+  uint8_t secret_key1[64] = {};    
+  uint8_t secret_key2[64] = {};  
   int ID_example = 0; 
   char * Original;
-  Original = (char*)calloc(16, sizeof(char));    
+  Original = (char*)calloc(64, sizeof(char));    
   char * Decrypted;
-  Decrypted = (char*)calloc(16, sizeof(char)); 
+  Decrypted = (char*)calloc(64, sizeof(char)); 
   char * Original_copy;
-  Original_copy = (char*)calloc(16, sizeof(char)); 
+  Original_copy = (char*)calloc(64, sizeof(char)); 
   strcpy(Original, "Hello osama");
   strcpy(Original_copy, Original);
       
   //1st key 
   Curve25519::dh1(public_key1, secret_key1);
   Serial.println("Public key 1 printing: ");
-  for (int i = 0; i < 16; i++) Serial.print(public_key1[i]);
+  for (int i = 0; i < 64; i++) Serial.print(public_key1[i]);
   Serial.println();
   Serial.println("Secret key 1 printing: ");
-  for (int i = 0; i < 16; i++) Serial.print(secret_key1[i]);
+  for (int i = 0; i < 64; i++) Serial.print(secret_key1[i]);
   Serial.println();
 
   //Rx

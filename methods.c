@@ -80,7 +80,7 @@ void onFrameIn_database(char *buf, int len)
     
       Serial.println();
       Serial.println("Decryption: ");
-      // uint8_t public_key_uint2[32]; 
+      // uint8_t public_key_uint2[64]; 
       // memcpy(public_key_uint2, public_key, strlen(public_key)+1);
       DH2(buf_copy_key2, secret_key_database);
       Serial.println("the key used to decrypt: ");
@@ -133,7 +133,7 @@ void onFrameIn_database(char *buf, int len)
       flag_ID_done = true;
       Serial.println((flag_ID_done == true) ? "True" : "False");
 
-      send_packet(32, public_key_database, DIFFIE_PUBLIC_KEY);
+      send_packet(64, public_key_database, DIFFIE_PUBLIC_KEY);
 
       //packet.put( "Key Packet Received" );    
       //proto_database.write(packet);
@@ -160,7 +160,7 @@ void onFrameIn_door(char *buf, int len)
     if(buf[0]==DIFFIE_PUBLIC_KEY) 
     {
       Serial.println("The database received the Key packet"); //add code for what to do with data in case it is an ID 
-      //send_packet(32, "Public Key", DIFFIE_PUBLIC_KEY);
+      //send_packet(64, "Public Key", DIFFIE_PUBLIC_KEY);
       flag_ID_ack_done = true;
       int ID_example = 0; 
       //Read_json(doc,json);                                                //read json file 
@@ -169,11 +169,11 @@ void onFrameIn_door(char *buf, int len)
       Serial.println(ID_example);  
       char * ID_string;
       ID_string = (char*)calloc(64, sizeof(char));  
-      // char ID_string[32]; 
+      // char ID_string[64]; 
       align_ID_string(ID_example, ID_string);  
-      uint8_t public_key_uint[32]; 
+      uint8_t public_key_uint[64]; 
 
-      uint8_t public_key_uint_copy[32]; 
+      uint8_t public_key_uint_copy[64]; 
       //memcpy(public_key_uint, public_key_door, strlen(public_key_door)+1);
       for (int i = 0; i < len - 1; i++) public_key_uint[i] = buf[i+1];
       Serial.println("EL MAFROOD DA el key el gayeli men database:");
@@ -217,7 +217,7 @@ void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packe
   
 }
 
-void send_packet(uint16_t packetSize, uint8_t packet_to_send[32], Packet_Header packet_header_to_send) {
+void send_packet(uint16_t packetSize, uint8_t packet_to_send[64], Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
@@ -229,8 +229,8 @@ void send_packet(uint16_t packetSize, uint8_t packet_to_send[32], Packet_Header 
   packet.clear(); 
   Serial.println();
   packet.put(packet_header_to_send);          //add the packet header as the first byte
-  char packet_to_send_char[32]; 
-  uint8_t packet_to_send_int[32]; 
+  char packet_to_send_char[64]; 
+  uint8_t packet_to_send_int[64]; 
   memcpy(packet_to_send_char, packet_to_send, strlen(packet_to_send)+1);
   Serial.println("packet_to_send_char: ");
   Serial.println(packet_to_send_char);
