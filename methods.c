@@ -104,6 +104,8 @@ void onFrameIn_database(char *buf, int len)
       Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
       Serial.println();
       DH1(public_key_database, secret_key_database); 
+      Serial.println("this is the database PK: ");
+      for (int i = 0; i < 64; i++) Serial.print(public_key_database[i]);
       Serial.println("here");
       // char * buf_copy;
       // buf_copy = (char*)calloc(64, sizeof(char)); 
