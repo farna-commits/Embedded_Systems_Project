@@ -24,13 +24,26 @@ void setup() {
   // Serial.print("Fetching an ID from database as an example: ");
   // Serial.println(ID_example);  
   // align_ID_string(ID_example, ID_string);                             //concatinate with 12 0s to align for aes function                                           
+  
+  
+  
+  //DH1 -- Generating door public and secret keys
   DH1(public_key_door, secret_key_door);                               //call macro that generates key using Diffie Hellman 
-  Serial.println(strlen(public_key_door));
-  uint16_t packetsize_dh = 64; 
-  Serial.print("Public key to be sent: ");
-  Serial.println("Public key 1 printing: ");
-  for (int i = 0; i < 64; i++) Serial.print(public_key_door[i]);
-  send_packet(packetsize_dh, public_key_door, DIFFIE_PUBLIC_KEY);
+  //Serial.println(strlen(public_key_door));
+  //uint16_t packetsize_dh = 64; 
+  
+  //Printing the public key to be sent and the secret key
+  Serial.println("this is the door PK: ");
+  for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door[i]);
+  Serial.println();
+  Serial.println("this is the door SK: ");
+  for (int i = 0; i < KEY_SIZE; i++) Serial.print(secret_key_door[i]);
+  Serial.println();
+  
+  //sending the Public Key
+  send_packet_door(KEY_SIZE, public_key_door, DIFFIE_PUBLIC_KEY);
+
+
   Read_json(doc,json);
   // AES_encrypt(public_key,ID_string);                                  //encrypt using aes128 
   // AES_decrypt(public_key, ID_string);                                 //decryption test 

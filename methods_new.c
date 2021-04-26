@@ -56,7 +56,7 @@ void onFrameIn_database(char *buf, int len) {
     if(buf[0] == DIFFIE_PUBLIC_KEY && flag_key_done == false) {
 
         //Printing key packet 
-        Serial.print("The received key packet is: "); 
+        Serial.print("The received key packet from the door is: "); 
         for (int i=0; i<len; i++) Serial.print(buf[i]);
         
         //DH1 
@@ -75,7 +75,7 @@ void onFrameIn_database(char *buf, int len) {
         
         //Send packet 
         flag_key_done = true; 
-        send_packet(KEY_SIZE, public_key_database, DIFFIE_PUBLIC_KEY);
+        send_packet_database(KEY_SIZE, public_key_database, DIFFIE_PUBLIC_KEY);
 
     }
     //Case ID 
@@ -108,4 +108,116 @@ void onFrameIn_database(char *buf, int len) {
         proto_database.write(packet);
 
     }
+}
+
+void onFrameIn_door(char *buf, int len){
+      if(buf[0]==DIFFIE_PUBLIC_KEY)
+      {
+              //Printing Key packet 
+              Serial.print("The received key packet from the database is: "); 
+              for (int i=0; i<len; i++) Serial.print(buf[i]); Serial.println();
+
+              //Extracting key from packet  
+              for (int i = 0; i < KEY_SIZE; i++) public_key_database_copy[i] = buf[i+1];
+              Serial.print("The received public key copy is: "); 
+              for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database_copy[i]); Serial.println();
+
+
+              //Fetch from example
+              int ID_example = 0; 
+              //Read_json(doc,json);                                                //read json file 
+              ID_example = doc["ID"][9];                                         //fetch ID from json database 
+              Serial.print("Fetching an ID from database as an example: ");
+              Serial.println(ID_example);  
+              char * ID_string;
+              ID_string = (char*)calloc(64, sizeof(char));  
+              // char ID_string[64]; 
+              align_ID_string(ID_example, ID_string); 
+              //After Alignment
+              Serial.println("Aligned: ");
+              Serial.println(ID_string);
+
+              //DH2
+              DH2(public_key_database_copy, secret_key_door);
+              Serial.println("ABG key is: ");
+              for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door_copy[i]); Serial.println();
+
+              //Encryption
+              AES_encrypt(public_key_database_copy, ID_string);
+
+
+              //Print the encrypted data
+              Serial.println("The encrypted ID is: ")
+              for (int i = 0; i < len; i++) Serial.print(ID_string[i]);
+
+              // Send the encrypted data
+              flag_ID_ack_done = true;
+              send_packet_door(KEY_SIZE, ID_string, ID_HEADER);
+      }
+      else if (buf[0]==ACK_ID && flag_ID_ack_done == true){
+        //Decision to open door or not
+        Serial.println("The database bey2ool tamam wala la");
+      }
+}
+
+void send_packet_door(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
+  if (packetSize > MAX_BUFFER_SIZE) {
+    packetSize = MAX_BUFFER_SIZE;
+  }
+  Tiny::Packet<64> packet; 
+  proto_door.enableCheckSum(); 
+  proto_door.beginToSerial();
+  packet.clear(); 
+
+  packet.put(packet_header_to_send);          //add the packet header as the first byte 
+  packet.put(packet_to_send);         //add the data to the packet 
+  proto_door.write(packet);
+  
+}
+
+
+void send_packet_database(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
+  if (packetSize > MAX_BUFFER_SIZE) {
+    packetSize = MAX_BUFFER_SIZE;
+  }
+  Tiny::Packet<64> packet; 
+  proto_database.enableCheckSum(); 
+  proto_database.beginToSerial();
+  packet.clear(); 
+
+  packet.put(packet_header_to_send);          //add the packet header as the first byte 
+  packet.put(packet_to_send);         //add the data to the packet 
+  proto_database.write(packet);
+  
+}
+
+
+void send_packet_door(uint16_t packetSize, uint8_t packet_to_send[64], Packet_Header packet_header_to_send) {
+  if (packetSize > MAX_BUFFER_SIZE) {
+    packetSize = MAX_BUFFER_SIZE;
+  }
+  Tiny::Packet<64> packet; 
+  proto_door.enableCheckSum(); 
+  proto_door.beginToSerial();
+  packet.clear(); 
+
+  packet.put(packet_header_to_send);   //add the packet header as the first byte
+  for (int i = 0; i < packetSize; i++) packet.put(packet_to_send[i]);
+  
+  proto_door.write(packet);
+}
+
+void send_packet_database(uint16_t packetSize, uint8_t packet_to_send[64], Packet_Header packet_header_to_send) {
+  if (packetSize > MAX_BUFFER_SIZE) {
+    packetSize = MAX_BUFFER_SIZE;
+  }
+  Tiny::Packet<64> packet; 
+  proto_database.enableCheckSum(); 
+  proto_database.beginToSerial();
+  packet.clear(); 
+
+  packet.put(packet_header_to_send);   //add the packet header as the first byte
+  for (int i = 0; i < packetSize; i++) packet.put(packet_to_send[i]);
+  
+  proto_database.write(packet);
 }

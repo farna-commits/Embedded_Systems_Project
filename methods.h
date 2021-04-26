@@ -53,7 +53,7 @@ uint8_t secret_key_database [KEY_SIZE]   = {};
 uint8_t public_key_door     [KEY_SIZE]   = {};
 uint8_t secret_key_door     [KEY_SIZE]   = {}; 
 uint8_t public_key_door_copy   [KEY_SIZE]   = {};
-uint8_t buf_copy_key2       [KEY_SIZE]   = {};
+uint8_t public_key_database_copy       [KEY_SIZE]   = {};
 
 
 

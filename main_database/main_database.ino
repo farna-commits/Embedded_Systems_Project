@@ -6,7 +6,7 @@
 // #include "C:\Users\Mahmoud Shamaa\Desktop\Embedded Systems\Project\Embedded_Systems_Project\hashing.c"
 //#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.c"
 //#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
-#include "/home/haitham/Embedded/Embedded_Systems_Project/methods.c"
+#include "/home/haitham/Embedded/Embedded_Systems_Project/methods_new.c"
 #include "/home/haitham/Embedded/Embedded_Systems_Project/hashing.c"
 
 #include <string.h>
