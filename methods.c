@@ -74,10 +74,12 @@ void onFrameIn_database(char *buf, int len)
       char * buf_copy;
       buf_copy = (char*)calloc(64, sizeof(char)); 
       Serial.println("Copying buf: ");
-      for (int i = 0; i < len; i++) buf_copy[i] = buf[i];
-      for (int i = 0; i < len; i++) Serial.print(buf_copy[i]);
+      for (int i = 0; i < len-1; i++) buf_copy[i] = buf[i+1];
+      for (int i = 0; i < len-1; i++) Serial.print(buf_copy[i]);
       Serial.println("Decryption: ");
-      AES_decrypt(public_key, buf_copy);
+      // uint8_t public_key_uint2[32]; 
+      // memcpy(public_key_uint2, public_key, strlen(public_key)+1);
+      AES_decrypt(buf_copy_key, buf_copy);
 
       Tiny::Packet<64> packet;
       packet.clear();
@@ -91,20 +93,21 @@ void onFrameIn_database(char *buf, int len)
       Serial.println();
       DH1(public_key2, secret_key2); 
       Serial.println("here");
-      char * buf_copy;
-      buf_copy = (char*)calloc(64, sizeof(char)); 
+      // char * buf_copy;
+      // buf_copy = (char*)calloc(64, sizeof(char)); 
       // Serial.println("Buf Now: ");
       // for (int i = 0; i < len; i++) Serial.print(buf[i]);
       // Serial.println();
       Serial.println("Copying buf: ");
-      for (int i = 0; i < len; i++) buf_copy[i] = buf[i];
+      for (int i = 0; i < len - 1; i++) buf_copy_key[i] = buf[i+1];
       Serial.println("Copy loop done");
       //Serial.println(buf_copy);
       // Serial.println("Buf Now: ");
       // for (int i = 0; i < len; i++) Serial.print(buf[i]);
       // Serial.println("Buf copy Now: ");
-      for (int i = 0; i < len; i++) Serial.print(buf_copy[i]);
-      DH2(buf_copy, secret_key2);
+      for (int i = 0; i < len - 1; i++) Serial.print(buf_copy_key[i]);
+      Serial.println();
+      DH2(buf_copy_key, secret_key2);
       Serial.println("DH2 Done");
       flag_ID_done = true;
       Serial.println((flag_ID_done == true) ? "True" : "False");
@@ -146,7 +149,9 @@ void onFrameIn_door(char *buf, int len)
       ID_string = (char*)calloc(64, sizeof(char));  
       // char ID_string[32]; 
       align_ID_string(ID_example, ID_string);  
-      AES_encrypt(public_key,ID_string); 
+      uint8_t public_key_uint[32]; 
+      memcpy(public_key_uint, public_key, strlen(public_key)+1);
+      AES_encrypt(public_key_uint,ID_string); 
       Serial.println("ana hena yabona");
       uint16_t size_yabona = 64; 
       Serial.println(strlen(ID_string));
@@ -176,7 +181,7 @@ void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packe
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
-  Tiny::Packet<32> packet; 
+  Tiny::Packet<64> packet; 
   proto_door.enableCheckSum(); 
   proto_door.beginToSerial();
   packet.clear(); 
@@ -193,14 +198,25 @@ void send_packet(uint16_t packetSize, uint8_t packet_to_send[32], Packet_Header 
   }
   Serial.println("men gowa: ");
   for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send[i]);
-  Tiny::Packet<32> packet; 
+  Tiny::Packet<64> packet; 
   proto_door.enableCheckSum(); 
   proto_door.beginToSerial();
   packet.clear(); 
   Serial.println();
-  packet.put(packet_header_to_send);          //add the packet header as the first byte 
-  for (int i = 0; i < packetSize; i++) packet.put(packet_to_send[i]);
-  
+  packet.put(packet_header_to_send);          //add the packet header as the first byte
+  char packet_to_send_char[32]; 
+  uint8_t packet_to_send_int[32]; 
+  memcpy(packet_to_send_char, packet_to_send, strlen(packet_to_send)+1);
+  Serial.println("packet_to_send_char: ");
+  Serial.println(packet_to_send_char);
+  Serial.println("packet_to_send_int: ");
+  memcpy(packet_to_send_int, packet_to_send_char, strlen(packet_to_send_char)+1);
+  for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send_int[i]);
+  for (int i = 0; i < packetSize; i++) packet.put(packet_to_send_char[i]);
+  Serial.println("ba3d el put: ");
+  for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send[i]);
   proto_door.write(packet);
+  Serial.println("ba3d el write: ");
+  for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send[i]);
   
 }

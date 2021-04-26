@@ -51,6 +51,7 @@ uint8_t public_key2[64]   = {};
 uint8_t secret_key2[64]   = {}; 
 uint8_t public_key[64]    = {};
 uint8_t secret_key[64]    = {}; 
+uint8_t buf_copy_key[64]  = {};
 
 
 //Functions 
