@@ -180,7 +180,7 @@ void onFrameIn_door(char *buf, int len)
       for (int i = 0; i < len-2; i++) public_key_uint_copy[i] = public_key_uint[i+1];
 
       for (int i = 0; i < len; i++) Serial.print(public_key_uint_copy[i]); 
-      DH2(public_key_uint,secret_key_door);
+      DH2(public_key_uint_copy,secret_key_door);
       Serial.println("EL MAFROOD DA ABG:");
       for (int i = 0; i < len; i++) Serial.print(public_key_uint_copy[i]); 
       AES_encrypt(public_key_uint_copy,ID_string); 
