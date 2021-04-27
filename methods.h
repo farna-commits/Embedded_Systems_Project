@@ -41,28 +41,29 @@ enum Packet_Header: char {
   ACK_ID            = 'R', 
   ACK_KEY           = 'K'
 };
-//Haitham: proposed enumeration
-//enum packet_header {ID_HEADER, DIFFIE_PUBLIC_KEY}; 
-char received_packet[16];
-bool flag_ID_done = false;
-bool flag_ID_ack_done = false;
-bool flag_keep_sending_ID = false;
-uint8_t public_key2[64]   = {};
-uint8_t secret_key2[64]   = {}; 
-uint8_t public_key[64]    = {};
-uint8_t secret_key[64]    = {}; 
-uint8_t buf_copy_key[64]  = {};
-uint8_t buf_copy_key2[64]  = {};
 
+bool  flag_key_done         = false;
+bool  flag_ID_ack_done      = false;
+bool  flag_keep_sending_ID  = false;
+const uint8_t KEY_SIZE      = 32;
+
+uint8_t * public_key_database      = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * secret_key_database      = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_door          = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * secret_key_door          = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_door_copy     = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_database_copy = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 
 //Functions 
-void AES_encrypt(uint8_t * key, uint8_t * buf );
-void AES_decrypt(uint8_t * key, char * buf); 
-DeserializationError Read_json(StaticJsonDocument<700>, char*); 
-void align_ID_string(int, char a[]);
-void onFrameIn_database(char *buf, int len); 
-void onFrameIn_door(char *buf, int len); 
-void send_packet(uint16_t, char *, Packet_Header); 
+void                    AES_encrypt           (uint8_t * key, uint8_t * buf );
+void                    AES_decrypt           (uint8_t * key, char * buf); 
+DeserializationError    Read_json             (StaticJsonDocument<700>, char*); 
+void                    align_ID_string       (int, char a[]);
+void                    onFrameIn_database    (char *buf, int len); 
+void                    onFrameIn_door        (char *buf, int len); 
+void                    send_packet_door      (uint16_t, char *, Packet_Header); 
+void                    send_packet_database  (uint16_t, char *, Packet_Header); 
+
 
 
 #ifdef __cplusplus
