@@ -69,7 +69,7 @@ void onFrameIn_database(char *buf, int len) {
         Serial.println();
 
         //Extracting key from packet  
-        for (int i = 0; i < KEY_SIZE; i++) public_key_door_copy[i] = buf[i+1];
+        for (int i = 0; i < KEY_SIZE+3; i++) public_key_door_copy[i] = buf[i+2];
         Serial.print("The received public key copy is: "); 
         for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door_copy[i]); Serial.println();
         
@@ -118,7 +118,7 @@ void onFrameIn_door(char *buf, int len){
               for (int i=0; i<len; i++) Serial.print(buf[i]); Serial.println();
 
               //Extracting key from packet  
-              for (int i = 0; i < KEY_SIZE; i++) public_key_database_copy[i] = buf[i+1];
+              for (int i = 0; i < KEY_SIZE+3; i++) public_key_database_copy[i] = buf[i+2];
               Serial.print("The received public key copy is: "); 
               for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database_copy[i]); Serial.println();
 
@@ -192,7 +192,7 @@ void send_packet_database(uint16_t packetSize, char * packet_to_send, Packet_Hea
 }
 
 
-void send_packet_door(uint16_t packetSize, uint8_t packet_to_send[64], Packet_Header packet_header_to_send) {
+void send_packet_door(uint16_t packetSize, uint8_t packet_to_send[KEY_SIZE], Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
@@ -207,7 +207,7 @@ void send_packet_door(uint16_t packetSize, uint8_t packet_to_send[64], Packet_He
   proto_door.write(packet);
 }
 
-void send_packet_database(uint16_t packetSize, uint8_t packet_to_send[64], Packet_Header packet_header_to_send) {
+void send_packet_database(uint16_t packetSize, uint8_t packet_to_send[KEY_SIZE], Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
