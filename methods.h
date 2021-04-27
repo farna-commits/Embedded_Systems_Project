@@ -41,19 +41,17 @@ enum Packet_Header: char {
   ACK_ID            = 'R', 
   ACK_KEY           = 'K'
 };
-//Haitham: proposed enumeration
-//enum packet_header {ID_HEADER, DIFFIE_PUBLIC_KEY}; 
-char received_packet[16];
+
 bool flag_key_done = false;
 bool flag_ID_ack_done = false;
 bool flag_keep_sending_ID = false;
 const uint8_t KEY_SIZE = 16;
-uint8_t public_key_database [KEY_SIZE]   = {};
-uint8_t secret_key_database [KEY_SIZE]   = {}; 
-uint8_t public_key_door     [KEY_SIZE]   = {};
-uint8_t secret_key_door     [KEY_SIZE]   = {}; 
-uint8_t public_key_door_copy   [KEY_SIZE]   = {};
-uint8_t public_key_database_copy       [KEY_SIZE]   = {};
+uint8_t public_key_database       [KEY_SIZE]   = {};
+uint8_t secret_key_database       [KEY_SIZE]   = {}; 
+uint8_t public_key_door           [KEY_SIZE]   = {};
+uint8_t secret_key_door           [KEY_SIZE]   = {}; 
+uint8_t public_key_door_copy      [KEY_SIZE]   = {};
+uint8_t public_key_database_copy  [KEY_SIZE]   = {};
 
 
 
