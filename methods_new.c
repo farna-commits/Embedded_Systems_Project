@@ -69,7 +69,7 @@ void onFrameIn_database(char *buf, int len) {
         Serial.println();
 
         //Extracting key from packet  
-        for (int i = 0; i < KEY_SIZE+3; i++) public_key_door_copy[i] = buf[i+2];
+        for (int i = 0; i < KEY_SIZE; i++) public_key_door_copy[i] = buf[i+2];
         Serial.print("The received public key copy is: "); 
         for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door_copy[i]); Serial.println();
         
@@ -110,56 +110,6 @@ void onFrameIn_database(char *buf, int len) {
     }
 }
 
-<<<<<<< HEAD
-void onFrameIn_door(char *buf, int len) {
-
-    //Case key
-    if(buf[0] == DIFFIE_PUBLIC_KEY)
-    {
-        //Printing Key packet 
-        Serial.print("The received key packet from the database is: "); 
-        for (int i=0; i<len; i++) Serial.print(buf[i]); Serial.println();
-
-        //Extracting key from packet  
-        for (int i = 0; i < KEY_SIZE; i++) public_key_database_copy[i] = buf[i+1];
-        Serial.print("The received public key copy is: "); 
-        for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database_copy[i]); Serial.println();
-
-
-        //Fetch from example
-        int ID_example = 0; 
-        //Read_json(doc,json);                                                //read json file 
-        ID_example = doc["ID"][9];                                         //fetch ID from json database 
-        Serial.print("Fetching an ID from database as an example: ");
-        Serial.println(ID_example);  
-        char * ID_string;
-        ID_string = (char*)calloc(64, sizeof(char));  
-        // char ID_string[64]; 
-        align_ID_string(ID_example, ID_string); 
-        //After Alignment
-        Serial.println("Aligned: ");
-        Serial.println(ID_string);
-
-        //DH2
-        DH2(public_key_database_copy, secret_key_door);
-        Serial.println("ABG key is: ");
-        for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door_copy[i]); Serial.println();
-
-        //Encryption
-        AES_encrypt(public_key_database_copy, ID_string);
-
-
-        //Print the encrypted data
-        Serial.println("The encrypted ID is: ");
-        for (int i = 0; i < len; i++) Serial.print(ID_string[i]); Serial.println();
-
-        // Send the encrypted data
-        flag_ID_ack_done = true;
-        send_packet_door(KEY_SIZE, ID_string, ID_HEADER);
-    }
-
-    else if (buf[0] == ACK_ID && flag_ID_ack_done == true) {
-=======
 void onFrameIn_door(char *buf, int len){
       if(buf[0]==DIFFIE_PUBLIC_KEY)
       {
@@ -168,7 +118,7 @@ void onFrameIn_door(char *buf, int len){
               for (int i=0; i<len; i++) Serial.print(buf[i]); Serial.println();
 
               //Extracting key from packet  
-              for (int i = 0; i < KEY_SIZE+3; i++) public_key_database_copy[i] = buf[i+2];
+              for (int i = 0; i < KEY_SIZE; i++) public_key_database_copy[i] = buf[i+2];
               Serial.print("The received public key copy is: "); 
               for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database_copy[i]); Serial.println();
 
@@ -181,7 +131,6 @@ void onFrameIn_door(char *buf, int len){
               Serial.println(ID_example);  
               char * ID_string;
               ID_string = (char*)calloc(64, sizeof(char));  
-              // char ID_string[64]; 
               align_ID_string(ID_example, ID_string); 
               //After Alignment
               Serial.println("Aligned: ");
@@ -190,7 +139,7 @@ void onFrameIn_door(char *buf, int len){
               //DH2
               DH2(public_key_database_copy, secret_key_door);
               Serial.println("ABG key is: ");
-              for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door_copy[i]); Serial.println();
+              for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database_copy[i]); Serial.println();
 
               //Encryption
               AES_encrypt(public_key_database_copy, ID_string);
@@ -205,7 +154,6 @@ void onFrameIn_door(char *buf, int len){
               send_packet_door(KEY_SIZE, ID_string, ID_HEADER);
       }
       else if (buf[0]==ACK_ID && flag_ID_ack_done == true){
->>>>>>> cd937cf7a00df614276668634706b0651424805e
         //Decision to open door or not
         Serial.println("The database bey2ool tamam wala la");
     }
