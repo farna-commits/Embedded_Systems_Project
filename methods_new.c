@@ -93,13 +93,14 @@ void onFrameIn_database(char *buf, int len) {
         //Extracting ID packet 
         char * buf_copy;
         buf_copy = (char*)calloc(len, sizeof(char)); 
-        for (int i = 0; i < len - 1; i++) buf_copy[i] = buf[i+1];
+        for (int i = 0; i < len - 1; i++) buf_copy[i] = buf[i+2];
         Serial.print("The encrypted ID copy is: "); 
         for (int i = 0; i < len - 1; i++) Serial.print(buf_copy[i]); Serial.println();
 
 
         //Decryption
         AES_decrypt(public_key_door_copy, buf_copy);
+      
 
         //Send done 
         Tiny::Packet<64> packet;
@@ -126,7 +127,7 @@ void onFrameIn_door(char *buf, int len){
               //Fetch from example
               int ID_example = 0; 
               //Read_json(doc,json);                                                //read json file 
-              ID_example = doc["ID"][9];                                         //fetch ID from json database 
+              ID_example = doc["ID"][4];                                         //fetch ID from json database 
               Serial.print("Fetching an ID from database as an example: ");
               Serial.println(ID_example);  
               char * ID_string;
@@ -147,9 +148,9 @@ void onFrameIn_door(char *buf, int len){
               Serial.println("The encrypted ID before encryption is: ");
               for (int i = 0; i < len; i++) Serial.print(ID_string[i]); Serial.println();
 
-              //Encryption
+              //Encryption     
+              //uint8_t public_key1[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};       
               AES_encrypt(public_key_database_copy, ID_string);
-
 
               //Print the encrypted data
               Serial.println("The encrypted ID is: ");
