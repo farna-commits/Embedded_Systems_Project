@@ -45,13 +45,20 @@ enum Packet_Header: char {
 bool flag_key_done = false;
 bool flag_ID_ack_done = false;
 bool flag_keep_sending_ID = false;
-const uint8_t KEY_SIZE = 16;
-uint8_t public_key_database       [KEY_SIZE + 3]   = {};
-uint8_t secret_key_database       [KEY_SIZE + 3]   = {}; 
-uint8_t public_key_door           [KEY_SIZE + 3]   = {};
-uint8_t secret_key_door           [KEY_SIZE + 3]   = {}; 
-uint8_t public_key_door_copy      [KEY_SIZE + 3]   = {};
-uint8_t public_key_database_copy  [KEY_SIZE + 3]   = {};
+const uint8_t KEY_SIZE = 32;
+// uint8_t public_key_database       [KEY_SIZE]   = {};
+// uint8_t secret_key_database       [KEY_SIZE]   = {}; 
+// uint8_t public_key_door           [KEY_SIZE]   = {};
+// uint8_t secret_key_door           [KEY_SIZE]   = {}; 
+// uint8_t public_key_door_copy      [KEY_SIZE]   = {};
+// uint8_t public_key_database_copy  [KEY_SIZE]   = {};
+
+uint8_t * public_key_database      = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * secret_key_database      = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_door          = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * secret_key_door          = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_door_copy     = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_database_copy = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 
 
 

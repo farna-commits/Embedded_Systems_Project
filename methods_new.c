@@ -140,6 +140,12 @@ void onFrameIn_door(char *buf, int len){
               DH2(public_key_database_copy, secret_key_door);
               Serial.println("ABG key is: ");
               for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database_copy[i]); Serial.println();
+              Serial.print("ABG kolo is: ");
+              Serial.println((int)public_key_database_copy);
+
+              //Print the encrypted data
+              Serial.println("The encrypted ID before encryption is: ");
+              for (int i = 0; i < len; i++) Serial.print(ID_string[i]); Serial.println();
 
               //Encryption
               AES_encrypt(public_key_database_copy, ID_string);
@@ -147,7 +153,7 @@ void onFrameIn_door(char *buf, int len){
 
               //Print the encrypted data
               Serial.println("The encrypted ID is: ");
-              for (int i = 0; i < len; i++) Serial.print(ID_string[i]);
+              for (int i = 0; i < len; i++) Serial.print(ID_string[i]); Serial.println();
 
               // Send the encrypted data
               flag_ID_ack_done = true;
