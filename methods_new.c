@@ -1,8 +1,5 @@
 #include "methods.h"
 
-#define DH1(X, Y)    Curve25519::dh1(X, Y)
-#define DH2(X, Y)    Curve25519::dh2(X, Y)
-
 void read_ID() {
   int i = 0;
   while (i < ID_SIZE)
@@ -20,8 +17,8 @@ DeserializationError Read_json(StaticJsonDocument<700>, char*) {
   DeserializationError error = deserializeJson(doc, json);
   // Test if parsing succeeds.
   if (error) {
-    Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.f_str());
+    Print(F("deserializeJson() failed: "));
+    Println(error.f_str());
   }  
   return error; 
 }
@@ -33,17 +30,13 @@ void align_ID_string(int ID_example, char a[16]) {
 
 void AES_encrypt(uint8_t * key, char * buf ) {
   aes128_enc_single(key, buf);
-  Serial.print("Encrypted ID:");
-  Serial.println(buf);
-  //Serial.println(strlen(buf));
+  Print("Encrypted ID:");
+  Println(buf);
 
 }
 
 void AES_decrypt(uint8_t * key, char * buf) {
   aes128_dec_single(key, buf);
-  Serial.print("Decrypted ID:");
-  for (int i = 0; i < 4; i++) Serial.print(buf[i]); 
-  
 }
 
 //Tiny objects 
@@ -56,22 +49,22 @@ void onFrameIn_database(char *buf, int len) {
     if(buf[0] == DIFFIE_PUBLIC_KEY && flag_key_done == false) {
 
         //Printing key packet 
-        Serial.print("The received key packet from the door is: "); 
-        for (int i=0; i<len; i++) Serial.print(buf[i]);
+        Print("The received key packet from the door is: "); 
+        for (int i=0; i<len; i++) Print(buf[i]);
         
         //DH1 
         DH1(public_key_database, secret_key_database); 
-        Serial.println("this is the database PK: ");
-        for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database[i]);
-        Serial.println();
-        Serial.println("this is the database SK: ");
-        for (int i = 0; i < KEY_SIZE; i++) Serial.print(secret_key_database[i]);
-        Serial.println();
+        Println("this is the database PK: ");
+        for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database[i]);
+        Println();
+        Println("this is the database SK: ");
+        for (int i = 0; i < KEY_SIZE; i++) Print(secret_key_database[i]);
+        Println();
 
         //Extracting key from packet  
         for (int i = 0; i < KEY_SIZE; i++) public_key_door_copy[i] = buf[i+2];
-        Serial.print("The received public key copy is: "); 
-        for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door_copy[i]); Serial.println();
+        Print("The received public key copy is: "); 
+        for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
         
         //Send packet 
         flag_key_done = true; 
@@ -82,24 +75,28 @@ void onFrameIn_database(char *buf, int len) {
     else if(buf[0]== ID_HEADER && flag_key_done == true) {
 
         //Printing ID packet 
-        Serial.print("The received Encrypted ID packet is: "); 
-        for (int i=0; i<len; i++) Serial.print(buf[i]); Serial.println();
+        Print("The received Encrypted ID packet is: "); 
+        for (int i=0; i<len; i++) Print(buf[i]); Println();
 
         //DH2
         DH2(public_key_door_copy, secret_key_database);
-        Serial.println("ABG key is: ");
-        for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door_copy[i]); Serial.println();
+        Println("ABG key is: ");
+        for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
 
         //Extracting ID packet 
         char * buf_copy;
         buf_copy = (char*)calloc(len, sizeof(char)); 
         for (int i = 0; i < len - 1; i++) buf_copy[i] = buf[i+2];
-        Serial.print("The encrypted ID copy is: "); 
-        for (int i = 0; i < len - 1; i++) Serial.print(buf_copy[i]); Serial.println();
+        Print("The encrypted ID copy is: "); 
+        for (int i = 0; i < len - 1; i++) Print(buf_copy[i]); Println();
 
 
-        //Decryption
+        //Decryption        
         AES_decrypt(public_key_door_copy, buf_copy);
+        //Copy decrypted string into a new sized string 
+        for (int i = 0; i < ID_SIZE; i++) decrypted_string[i] = buf_copy[i];
+        Print("Decrypted ID: "); 
+        for (int i = 0; i < ID_SIZE; i++) Print(decrypted_string[i]);
       
 
         //Send done 
@@ -115,45 +112,45 @@ void onFrameIn_door(char *buf, int len){
       if(buf[0]==DIFFIE_PUBLIC_KEY)
       {
               //Printing Key packet 
-              Serial.print("The received key packet from the database is: "); 
-              for (int i=0; i<len; i++) Serial.print(buf[i]); Serial.println();
+              Print("The received key packet from the database is: "); 
+              for (int i=0; i<len; i++) Print(buf[i]); Println();
 
               //Extracting key from packet  
               for (int i = 0; i < KEY_SIZE; i++) public_key_database_copy[i] = buf[i+2];
-              Serial.print("The received public key copy is: "); 
-              for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database_copy[i]); Serial.println();
+              Print("The received public key copy is: "); 
+              for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database_copy[i]); Println();
 
 
               //Fetch from example
               int ID_example = 0; 
               //Read_json(doc,json);                                                //read json file 
-              ID_example = doc["ID"][49];                                         //fetch ID from json database 
-              Serial.print("Fetching an ID from database as an example: ");
-              Serial.println(ID_example);  
+              ID_example = doc["ID"][12];                                         //fetch ID from json database 
+              Print("Fetching an ID from database as an example: ");
+              Println(ID_example);  
               char * ID_string;
               ID_string = (char*)calloc(64, sizeof(char));  
               align_ID_string(ID_example, ID_string); 
               //After Alignment
-              Serial.println("Aligned: ");
-              Serial.println(ID_string);
+              Println("Aligned: ");
+              Println(ID_string);
 
               //DH2
               DH2(public_key_database_copy, secret_key_door);
-              Serial.println("ABG key is: ");
-              for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_database_copy[i]); Serial.println();
-              Serial.print("ABG kolo is: ");
-              Serial.println((int)public_key_database_copy);
+              Println("ABG key is: ");
+              for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database_copy[i]); Println();
+              Print("ABG kolo is: ");
+              Println((int)public_key_database_copy);
 
               //Print the encrypted data
-              Serial.println("The encrypted ID before encryption is: ");
-              for (int i = 0; i < len; i++) Serial.print(ID_string[i]); Serial.println();
+              Println("The encrypted ID before encryption is: ");
+              for (int i = 0; i < len; i++) Print(ID_string[i]); Println();
 
               //Encryption     
               AES_encrypt(public_key_database_copy, ID_string);
 
               //Print the encrypted data
-              Serial.println("The encrypted ID is: ");
-              for (int i = 0; i < len; i++) Serial.print(ID_string[i]); Serial.println();
+              Println("The encrypted ID is: ");
+              for (int i = 0; i < len; i++) Print(ID_string[i]); Println();
 
               // Send the encrypted data
               flag_ID_ack_done = true;
@@ -161,7 +158,7 @@ void onFrameIn_door(char *buf, int len){
       }
       else if (buf[0]==ACK_ID && flag_ID_ack_done == true){
         //Decision to open door or not
-        Serial.println("The database bey2ool tamam wala la");
+        Println("The database bey2ool tamam wala la");
     }
 }
 
