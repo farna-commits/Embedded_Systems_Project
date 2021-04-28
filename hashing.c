@@ -98,7 +98,7 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
 
   void ProcessInputMessage (char * InputString, char * hashed_string) { 
   // LengthOfInputString = strlen(InputString);  //Length in bytes, max 55 bytes
-  LengthOfInputString = 16;  //Length in bytes, max 55 bytes
+  LengthOfInputString = 4;  //Length in bytes, max 55 bytes
 
   if (LengthOfInputString > 55) {
     Serial.println();
