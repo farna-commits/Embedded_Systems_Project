@@ -53,14 +53,13 @@ bool  flag_ID_ack_done      = false;
 bool  flag_keep_sending_ID  = false;
 const uint8_t KEY_SIZE      = 32;
 
-uint8_t * public_key_database      = (uint8_t*)calloc(KEY_SIZE       , sizeof(uint8_t));
-uint8_t * secret_key_database      = (uint8_t*)calloc(KEY_SIZE       , sizeof(uint8_t));
-uint8_t * public_key_door          = (uint8_t*)calloc(KEY_SIZE       , sizeof(uint8_t));
-uint8_t * secret_key_door          = (uint8_t*)calloc(KEY_SIZE       , sizeof(uint8_t));
-uint8_t * public_key_door_copy     = (uint8_t*)calloc(KEY_SIZE       , sizeof(uint8_t));
-uint8_t * public_key_database_copy = (uint8_t*)calloc(KEY_SIZE       , sizeof(uint8_t));
-char    * decrypted_string         = (char*)   calloc(ID_SIZE        , sizeof(char));
-// char    * hashed_string            = (char*)   calloc(MAX_BUFFER_SIZE, sizeof(char));    
+uint8_t * public_key_database      = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * secret_key_database      = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_door          = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * secret_key_door          = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_door_copy     = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+uint8_t * public_key_database_copy = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+char    * decrypted_string         = (char*)   calloc(ID_SIZE , sizeof(char));
 
 //Functions 
 void                    AES_encrypt           (uint8_t * key, uint8_t * buf );
