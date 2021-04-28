@@ -12,8 +12,14 @@
  extern "C" {
 #endif
 
-const uint8_t ID_SIZE         = 4;
-const uint8_t PIN_SIZE        = 4;
+//Defines 
+#define DH1(X, Y)    Curve25519::dh1(X, Y)
+#define DH2(X, Y)    Curve25519::dh2(X, Y)
+#define Println(a)   (Serial.println(a))
+#define Print(a)     (Serial.print(a))
+
+//Variables 
+const int ID_SIZE              = 4;
 const uint16_t MAX_BUFFER_SIZE = 256; 
 
 char key2;
@@ -30,7 +36,6 @@ byte colPins[ROWS]                  = {36,38,4,5}; //connect to the row pinouts 
 byte rowPins[COLS]                  = {6,7,8,9};  //connect to the column pinouts of the keypad
 Keypad keypad                       = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 StaticJsonDocument<700> doc;
-//char *json = (char *)malloc(1000*sizeof(char));
 char json[] = "{\"ID\": [2606, 3405, 2303, 2073, 1635, 3668, 1133, 1968, 1440, 2806, 3773, 2220, 3912, 2251, 3870, 2362, 1236, 3161, 1593, 3211, 2797, 1388, 1272, 3016, 2290, 1768, 2186, 1928, 2013, 2561, 1689, 3988, 1182, 2061, 1848, 2305, 2053, 3479, 2506, 2032, 3678, 2472, 3909, 3137, 3645, 2761, 2247, 2899, 2270, 1900]}";
 uint16_t array_ID[ID_SIZE]    = {};
 uint8_t proto_buffer_door[MAX_BUFFER_SIZE]; 
@@ -53,6 +58,7 @@ uint8_t * public_key_door          = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t))
 uint8_t * secret_key_door          = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 uint8_t * public_key_door_copy     = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 uint8_t * public_key_database_copy = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
+char    * decrypted_string         = (char*)   calloc(ID_SIZE,  sizeof(char));
 
 //Functions 
 void                    AES_encrypt           (uint8_t * key, uint8_t * buf );
