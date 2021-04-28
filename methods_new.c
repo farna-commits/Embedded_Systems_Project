@@ -1,6 +1,26 @@
 #include "methods.h"
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 
+bool check_ID(char hashed_ID[])
+{
+  char query[256]=""'; char origin[256];
+  
+  for(int i=0; i<256; i++) strcat(query,hashed_ID[i]);
+  for(int i=0; i<DB_SIZE; i++)
+{
+  origin=doc["ID"][i];    //can't assign a char array to a string returned in doc[ID][i]?
+
+    if(origin == query) 
+    {
+      authorized=true;
+      i=DB_SIZE;
+    }
+
+}
+
+  
+  return authorized;
+}
 void read_ID() {
   int i = 0;
   while (i < ID_SIZE)
@@ -112,6 +132,14 @@ void onFrameIn_database(char *buf, int len) {
         ProcessInputMessage(decrypted_string, hashed_string);
         Print("Hashed printing from main method: ");  
         Println(hashed_string);  
+
+        //checking database for a match
+        bool authorized=0;
+        authorized=check_ID(hashed_string);  //can I pass a string in C? probably not. FML!
+        if(authorized) 
+           send_packet_database(KEY_SIZE, "Access Granted", ACK_ID);
+        else 
+          send_packet_database(KEY_SIZE, "Access Denied", ACK_ID);
 
     }
 }
