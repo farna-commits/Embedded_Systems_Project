@@ -1,4 +1,5 @@
 #include "methods.h"
+#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 
 void read_ID() {
   int i = 0;
@@ -104,6 +105,13 @@ void onFrameIn_database(char *buf, int len) {
         packet.clear();
         packet.put( "Now checking: " );          
         proto_database.write(packet);
+
+        //Hashing 
+        char * hashed_string; 
+        hashed_string = (char*)calloc(256, sizeof(char));     
+        ProcessInputMessage(decrypted_string, hashed_string);
+        Print("Hashed printing from main method: ");  
+        Println(hashed_string);  
 
     }
 }

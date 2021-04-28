@@ -1,6 +1,6 @@
 //Includes 
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods_new.c"
-#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
+//#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 // #include "C:\Users\Mahmoud Shamaa\Desktop\Embedded Systems\Project\Embedded_Systems_Project\methods_new.c"
 // #include "C:\Users\Mahmoud Shamaa\Desktop\Embedded Systems\Project\Embedded_Systems_Project\hashing.c"
 
@@ -29,12 +29,6 @@ void setup() {
   send_packet_door(KEY_SIZE, public_key_door, DIFFIE_PUBLIC_KEY);
   Read_json(doc,json);
 
-  // //Hashing 
-  // char * hashed_string; 
-  // hashed_string = (char*)calloc(256, sizeof(char));     
-  // ProcessInputMessage(ID_string, hashed_string);
-  // Serial.println("Hashed printing from main method: ");  
-  // Serial.println(hashed_string);  
 }
 
 //Loop 
