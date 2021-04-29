@@ -22,6 +22,7 @@
 //Variables 
 const int ID_SIZE              = 4;
 const uint16_t MAX_BUFFER_SIZE = 256; 
+const int DB_SIZE = 50;   //needs to change if database size is made dynamic with option to add/remove users
 
 char key2;
 const byte ROWS = 4; //four rows
@@ -70,6 +71,7 @@ void                    onFrameIn_database    (char *buf, int len);
 void                    onFrameIn_door        (char *buf, int len); 
 void                    send_packet_door      (uint16_t, char *, Packet_Header); 
 void                    send_packet_database  (uint16_t, char *, Packet_Header); 
+bool                    check_ID              (char hashed_ID[]);
 
 
 
