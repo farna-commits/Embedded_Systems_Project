@@ -12,26 +12,28 @@ void setup() {
 
   Serial.begin(9600);  
   while (!Serial) continue;
-  Serial.setTimeout(0); 
-  Serial.println();                                       
+  // Serial.setTimeout(0); 
+  // Serial.println();                                       
 
-  //DH1 -- Generating door public and secret keys
-  DH1(public_key_door, secret_key_door);                               //call macro that generates key using Diffie Hellman 
+  // //DH1 -- Generating door public and secret keys
+  // DH1(public_key_door, secret_key_door);                               //call macro that generates key using Diffie Hellman 
   
-  //Printing the public key to be sent and the secret key
-  Serial.println("this is the door PK: ");
-  for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door[i]);
-  Serial.println();
-  Serial.println("this is the door SK: ");
-  for (int i = 0; i < KEY_SIZE; i++) Serial.print(secret_key_door[i]);
-  Serial.println();
-  //sending the Public Key
-  send_packet_door(KEY_SIZE, public_key_door, DIFFIE_PUBLIC_KEY);
-  Read_json(doc,json);
+  // //Printing the public key to be sent and the secret key
+  // Serial.println("this is the door PK: ");
+  // for (int i = 0; i < KEY_SIZE; i++) Serial.print(public_key_door[i]);
+  // Serial.println();
+  // Serial.println("this is the door SK: ");
+  // for (int i = 0; i < KEY_SIZE; i++) Serial.print(secret_key_door[i]);
+  // Serial.println();
+  // //sending the Public Key
+  // send_packet_door(KEY_SIZE, public_key_door, DIFFIE_PUBLIC_KEY);
+  // Read_json(doc,json);
 
 }
 
 //Loop 
 void loop() {
- proto_door.run();
+read_ID();
+for (int i = 0; i < 4; i++) Print((char)array_ID[i]);
+// proto_door.run();
 }
