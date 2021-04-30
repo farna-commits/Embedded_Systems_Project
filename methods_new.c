@@ -1,26 +1,26 @@
 #include "methods.h"
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 
-bool check_ID(char hashed_ID[])
-{
-  char query[256]=""'; char origin[256];
+// bool check_ID(char hashed_ID[])
+// {
+//   char query[256]=""'; char origin[256];
   
-  for(int i=0; i<256; i++) strcat(query,hashed_ID[i]);
-  for(int i=0; i<DB_SIZE; i++)
-{
-  origin=doc["ID"][i];    //can't assign a char array to a string returned in doc[ID][i]?
+//   for(int i=0; i<256; i++) strcat(query,hashed_ID[i]);
+//   for(int i=0; i<DB_SIZE; i++)
+// {
+//   origin=doc["ID"][i];    //can't assign a char array to a string returned in doc[ID][i]?
 
-    if(origin == query) 
-    {
-      authorized=true;
-      i=DB_SIZE;
-    }
+//     if(origin == query) 
+//     {
+//       authorized=true;
+//       i=DB_SIZE;
+//     }
 
-}
+// }
 
   
-  return authorized;
-}
+//   return authorized;
+// }
 void read_ID() {
   int i = 0;
   while (i < ID_SIZE)
@@ -133,13 +133,13 @@ void onFrameIn_database(char *buf, int len) {
         Print("Hashed printing from main method: ");  
         Println(hashed_string);  
 
-        //checking database for a match
-        bool authorized=0;
-        authorized=check_ID(hashed_string);  //can I pass a string in C? probably not. FML!
-        if(authorized) 
-           send_packet_database(KEY_SIZE, "Access Granted", ACK_ID);
-        else 
-          send_packet_database(KEY_SIZE, "Access Denied", ACK_ID);
+        // //checking database for a match
+        // bool authorized=0;
+        // authorized=check_ID(hashed_string);  //can I pass a string in C? probably not. FML!
+        // if(authorized) 
+        //    send_packet_database(KEY_SIZE, "Access Granted", ACK_ID);
+        // else 
+        //   send_packet_database(KEY_SIZE, "Access Denied", ACK_ID);
 
     }
 }
@@ -160,7 +160,17 @@ void onFrameIn_door(char *buf, int len){
               //Fetch from example
               int ID_example = 0; 
               //Read_json(doc,json);                                                //read json file 
-              ID_example = doc["ID"][12];                                         //fetch ID from json database 
+              // ID_example = doc["ID"][12]; 
+
+              uint16_t Entered_ID = 0;
+              for (int i = 0; i < ID_SIZE; i++)
+              {
+                Entered_ID = Entered_ID * 10; 
+                Entered_ID = Entered_ID + (array_ID[i] - 48); 
+              }
+              Println("ID: ");
+              Println(Entered_ID);
+              ID_example = Entered_ID; 
               Print("Fetching an ID from database as an example: ");
               Println(ID_example);  
               char * ID_string;
