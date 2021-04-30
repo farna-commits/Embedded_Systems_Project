@@ -14,7 +14,9 @@ void setup() {
   while (!Serial) continue;
   Serial.setTimeout(0); 
   Serial.println();                                       
-
+  read_ID();
+  //Printing ID 
+  for (int i = 0; i < ID_SIZE; i++) Print((char)array_ID[i]);
   //DH1 -- Generating door public and secret keys
   DH1(public_key_door, secret_key_door);                               //call macro that generates key using Diffie Hellman 
   
@@ -33,5 +35,6 @@ void setup() {
 
 //Loop 
 void loop() {
- proto_door.run();
+
+proto_door.run();
 }
