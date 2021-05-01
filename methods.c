@@ -1,8 +1,30 @@
 #include "methods.h"
+#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 
-#define DH1(X, Y)    Curve25519::dh1(X, Y)
-#define DH2(X, Y)    Curve25519::dh2(X, Y)
+//Tiny objects 
+Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  onFrameIn_database);
+Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      onFrameIn_door);
 
+// bool check_ID(char hashed_ID[])
+// {
+//   char query[256]=""'; char origin[256];
+  
+//   for(int i=0; i<256; i++) strcat(query,hashed_ID[i]);
+//   for(int i=0; i<DB_SIZE; i++)
+// {
+//   origin=doc["ID"][i];    //can't assign a char array to a string returned in doc[ID][i]?
+
+//     if(origin == query) 
+//     {
+//       authorized=true;
+//       i=DB_SIZE;
+//     }
+
+// }
+
+  
+//   return authorized;
+// }
 void read_ID() {
   int i = 0;
   while (i < ID_SIZE)
@@ -20,189 +42,176 @@ DeserializationError Read_json(StaticJsonDocument<700>, char*) {
   DeserializationError error = deserializeJson(doc, json);
   // Test if parsing succeeds.
   if (error) {
-    Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.f_str());
+    Print(F("deserializeJson() failed: "));
+    Println(error.f_str());
   }  
   return error; 
 }
 
-void align_ID_string(int ID_example, char a[16]) {
+static void __align_ID_string(int ID_example, char a[16]) {
   itoa(ID_example, a, 10);
   strcat(a,"00000000000");
 }
 
+static void __array2uint16(uint16_t &a, uint16_t array[ID_SIZE]) {
+  for (int i = 0; i < ID_SIZE; i++)
+    {
+      a = a * 10; 
+      a = a + (array[i] - 48); 
+    }
+}
+
 void AES_encrypt(uint8_t * key, char * buf ) {
   aes128_enc_single(key, buf);
-  Serial.print("Encrypted ID:");
-  Serial.println(buf);
-  //Serial.println(strlen(buf));
+  Print("Encrypted ID:");
+  Println(buf);
 
 }
 
 void AES_decrypt(uint8_t * key, char * buf) {
   aes128_dec_single(key, buf);
-  Serial.print("Decrypted ID:");
-  for (int i = 0; i < strlen(buf); i++) Serial.print(buf[i]); 
+}
+
+
+
+void onFrameIn_database(char *buf, int len) {
+
+  //Case key 
+  if(buf[0] == DIFFIE_PUBLIC_KEY && flag_key_done == false) {
+
+    //Printing key packet 
+    Print("The received key packet from the door is: "); 
+    for (int i=0; i<len; i++) Print(buf[i]);
+    
+    //DH1 
+    DH1(public_key_database, secret_key_database); 
+    Println("this is the database PK: ");
+    for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database[i]);
+    Println();
+    Println("this is the database SK: ");
+    for (int i = 0; i < KEY_SIZE; i++) Print(secret_key_database[i]);
+    Println();
+
+    //Extracting key from packet  
+    for (int i = 0; i < KEY_SIZE; i++) public_key_door_copy[i] = buf[i+2];
+    Print("The received public key copy is: "); 
+    for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
+    
+    //Send packet 
+    flag_key_done = true; 
+    send_packet_database(KEY_SIZE, public_key_database, DIFFIE_PUBLIC_KEY);
+
+  }
+  //Case ID 
+  else if(buf[0]== ID_HEADER && flag_key_done == true) {
+
+    //Printing ID packet 
+    Print("The received Encrypted ID packet is: "); 
+    for (int i=0; i<len; i++) Print(buf[i]); Println();
+
+    //DH2
+    DH2(public_key_door_copy, secret_key_database);
+    Println("ABG key is: ");
+    for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
+
+    //Extracting ID packet 
+    char * buf_copy;
+    buf_copy = (char*)calloc(len, sizeof(char)); 
+    for (int i = 0; i < len - 1; i++) buf_copy[i] = buf[i+2];
+    Print("The encrypted ID copy is: "); 
+    for (int i = 0; i < len - 1; i++) Print(buf_copy[i]); Println();
+
+
+    //Decryption        
+    AES_decrypt(public_key_door_copy, buf_copy);
+    //Copy decrypted string into a new sized string 
+    for (int i = 0; i < ID_SIZE; i++) decrypted_string[i] = buf_copy[i];
+    Print("Decrypted ID: "); 
+    for (int i = 0; i < ID_SIZE; i++) Print(decrypted_string[i]);
   
-}
-//----------------------------Communication-----------------------------
 
-Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  onFrameIn_database);
-Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      onFrameIn_door);
+    //Send done 
+    Tiny::Packet<64> packet;
+    packet.clear();
+    packet.put( "Now checking: " );          
+    proto_database.write(packet);
 
-/* Function to receive incoming messages from remote side */
-void onFrameIn_database(char *buf, int len)
-{
+    //Hashing 
+    char * hashed_string; 
+    hashed_string = (char*)calloc(256, sizeof(char));     
+    ProcessInputMessage(decrypted_string, hashed_string);
+    Print("Hashed printing from main method: ");  
+    Println(hashed_string);  
 
- 
-    Serial.print("the received packet size is :");
-    Serial.println(len);
-    Serial.print("the received packet is :");
-    Serial.println();
-    Serial.println("Printing flags: ");
-    Serial.print("flag ID: ");
-    Serial.println((flag_ID_done == true) ? "True" : "False");
-    Serial.print("flag keep sending ID: ");
-    Serial.println((flag_keep_sending_ID == true) ? "True" : "False");
-    /* Do what you need with receive data here */
-     for (int i=0; i<len; i++) Serial.print(buf[i]);
-    if(buf[0]== ID_HEADER && flag_ID_done == true) 
-    {
-      Serial.println("Here in ID if");
-      Serial.println("This is the ID packet"); //add code for what to do with data in case it is an ID 
-      
-      char * buf_copy;
-      buf_copy = (char*)calloc(64, sizeof(char)); 
-      Serial.println("the encrypted data to be decrypted: ");
-      for (int i = 0; i < len-1; i++) buf_copy[i] = buf[i+1];
-      for (int i = 0; i < len-1; i++) Serial.print(buf_copy[i]);
-     Serial.println();
-    
-      Serial.println();
-      Serial.println("Decryption: ");
-      // uint8_t public_key_uint2[64]; 
-      // memcpy(public_key_uint2, public_key, strlen(public_key)+1);
-      DH2(buf_copy_key2, secret_key_database);
-      Serial.println("the key used to decrypt: ");
-      for (int i = 0; i < len-1; i++) Serial.print(buf_copy_key2[i]);
-      aes128_dec_single(buf_copy_key2, buf_copy);
-      Serial.print("Decrypted ID:");
-      for (int i = 0; i < strlen(buf_copy); i++) Serial.print(buf_copy[i]); 
-  
-     // AES_decrypt(buf_copy_key2, buf_copy);
+    // //checking database for a match
+    // bool authorized=0;
+    // authorized=check_ID(hashed_string);  //can I pass a string in C? probably not. FML!
+    // if(authorized) 
+    //    send_packet_database(KEY_SIZE, "Access Granted", ACK_ID);
+    // else 
+    //   send_packet_database(KEY_SIZE, "Access Denied", ACK_ID);
 
-
-      Tiny::Packet<64> packet;
-      packet.clear();
-      packet.put( "Received ID Packet" );          
-      proto_database.write(packet);
-
-
-    } 
-    else if(buf[0] == DIFFIE_PUBLIC_KEY && flag_ID_done == false)
-    {
-      Serial.println("This is the key packet");//add code for what to do with data in case it is a public key
-      Serial.println();
-      DH1(public_key_database, secret_key_database); 
-      Serial.println("this is the database PK: ");
-      for (int i = 0; i < 64; i++) Serial.print(public_key_database[i]);
-      Serial.println("here");
-      // char * buf_copy;
-      // buf_copy = (char*)calloc(64, sizeof(char)); 
-      // Serial.println("Buf Now: ");
-      // for (int i = 0; i < len; i++) Serial.print(buf[i]);
-      // Serial.println();
-      Serial.println("Copying buf: ");
-      for (int i = 0; i < len - 1; i++) buf_copy_key[i] = buf[i+1];
-      Serial.println("Copy loop done");
-       Serial.println("sham3a Debugger: ");
-      for (int i = 0; i < len; i++) Serial.print(buf[i]);
-      Serial.println();
-
-      for (int i = 0; i < len-2; i++) buf_copy_key2[i] = buf_copy_key[i+1];
-      Serial.println("Farna Debugger: ");
-       for (int i = 0; i < len-2; i++) Serial.print(buf_copy_key2[i]); Serial.println();
-      //Serial.println(buf_copy);
-      // Serial.println("Buf Now: ");
-      // for (int i = 0; i < len; i++) Serial.print(buf[i]);
-      // Serial.println("Buf copy Now: ");
-      for (int i = 0; i < len - 1; i++) Serial.print(buf_copy_key[i]);
-      Serial.println();
-      //DH2(buf_copy_key2, secret_key_database);
-      Serial.println("DH2 Done");
-      flag_ID_done = true;
-      Serial.println((flag_ID_done == true) ? "True" : "False");
-
-      send_packet(64, public_key_database, DIFFIE_PUBLIC_KEY);
-
-      //packet.put( "Key Packet Received" );    
-      //proto_database.write(packet);
-
-
-    }
-    
+  }
 }
 
-void onFrameIn_door(char *buf, int len)
-{
-    /* Do what you need with receive data here */
-    Serial.print("the received packet size is :");
-    Serial.println(len);
-    Serial.print("the received packet is :");
-    Serial.println();
-    Serial.println("Printing flags: ");
-    Serial.print("flag ID: ");
-    Serial.println((flag_ID_done == true) ? "True" : "False");
-    Serial.print("flag keep sending ID: ");
-    Serial.println((flag_keep_sending_ID == true) ? "True" : "False");
-    /* Do what you need with receive data here */
-     for (int i=0; i<len; i++) Serial.print(buf[i]);
-    if(buf[0]==DIFFIE_PUBLIC_KEY) 
-    {
-      Serial.println("The database received the Key packet"); //add code for what to do with data in case it is an ID 
-      //send_packet(64, "Public Key", DIFFIE_PUBLIC_KEY);
-      flag_ID_ack_done = true;
-      int ID_example = 0; 
-      //Read_json(doc,json);                                                //read json file 
-      ID_example = doc["ID"][9];                                         //fetch ID from json database 
-      Serial.print("Fetching an ID from database as an example: ");
-      Serial.println(ID_example);  
-      char * ID_string;
-      ID_string = (char*)calloc(64, sizeof(char));  
-      // char ID_string[64]; 
-      align_ID_string(ID_example, ID_string);  
-      uint8_t public_key_uint[64]; 
+void onFrameIn_door(char *buf, int len) {
+  if(buf[0]==DIFFIE_PUBLIC_KEY)
+  {
+    //Printing Key packet 
+    Print("The received key packet from the database is: "); 
+    for (int i=0; i<len; i++) Print(buf[i]); Println();
 
-      uint8_t public_key_uint_copy[64]; 
-      //memcpy(public_key_uint, public_key_door, strlen(public_key_door)+1);
-      for (int i = 0; i < len - 1; i++) public_key_uint[i] = buf[i+1];
-      Serial.println("EL MAFROOD DA el key el gayeli men database:");
-      for (int i = 0; i < len-2; i++) public_key_uint_copy[i] = public_key_uint[i+1];
+    //Extracting key from packet  
+    for (int i = 0; i < KEY_SIZE; i++) public_key_database_copy[i] = buf[i+2];
+    Print("The received public key copy is: "); 
+    for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database_copy[i]); Println();
 
-      for (int i = 0; i < len; i++) Serial.print(public_key_uint_copy[i]); 
-      DH2(public_key_uint_copy,secret_key_door);
-      Serial.println("EL MAFROOD DA ABG:");
-      for (int i = 0; i < len; i++) Serial.print(public_key_uint_copy[i]); 
-      AES_encrypt(public_key_uint_copy,ID_string); 
-      Serial.println("ana hena yabona");
-      uint16_t size_yabona = 64; 
-      Serial.println(strlen(ID_string));
-      for (int i = 0; i < len; i++) Serial.print(ID_string[i]);
-      send_packet(size_yabona, ID_string, ID_HEADER);
-      
-    } 
-    else if(buf[0]==ACK_ID && flag_ID_ack_done == true)
-    {
-        Serial.println("The database received the key packet");//add code for what to do with data in case it is a public key
-    
-    }
-   
+
+    //Fetch from example
+    int ID_example = 0; 
+    uint16_t Entered_ID = 0;
+    __array2uint16(Entered_ID, array_ID);
+    Println("ID: ");
+    Println(Entered_ID);
+    ID_example = Entered_ID; 
+    Print("Fetching an ID from database as an example: ");
+    Println(ID_example);  
+    char * ID_string;
+    ID_string = (char*)calloc(64, sizeof(char));  
+    __align_ID_string(ID_example, ID_string); 
+    //After Alignment
+    Println("Aligned: ");
+    Println(ID_string);
+
+    //DH2
+    DH2(public_key_database_copy, secret_key_door);
+    Println("ABG key is: ");
+    for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database_copy[i]); Println();
+    Print("ABG kolo is: ");
+    Println((int)public_key_database_copy);
+
+    //Print the encrypted data
+    Println("The encrypted ID before encryption is: ");
+    for (int i = 0; i < len; i++) Print(ID_string[i]); Println();
+
+    //Encryption     
+    AES_encrypt(public_key_database_copy, ID_string);
+
+    //Print the encrypted data
+    Println("The encrypted ID is: ");
+    for (int i = 0; i < len; i++) Print(ID_string[i]); Println();
+
+    // Send the encrypted data
+    flag_ID_ack_done = true;
+    send_packet_door(KEY_SIZE, ID_string, ID_HEADER);
+  }
+  else if (buf[0]==ACK_ID && flag_ID_ack_done == true){
+    //Decision to open door or not
+    Println("The database bey2ool tamam wala la");
+  }
 }
 
-
-
-
-void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
+void send_packet_door(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
@@ -217,31 +226,49 @@ void send_packet(uint16_t packetSize, char * packet_to_send, Packet_Header packe
   
 }
 
-void send_packet(uint16_t packetSize, uint8_t packet_to_send[64], Packet_Header packet_header_to_send) {
+
+void send_packet_database(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
   }
-  Serial.println("men gowa: ");
-  for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send[i]);
+  Tiny::Packet<64> packet; 
+  proto_database.enableCheckSum(); 
+  proto_database.beginToSerial();
+  packet.clear(); 
+
+  packet.put(packet_header_to_send);          //add the packet header as the first byte 
+  packet.put(packet_to_send);         //add the data to the packet 
+  proto_database.write(packet);
+  
+}
+
+
+void send_packet_door(uint16_t packetSize, uint8_t packet_to_send[KEY_SIZE], Packet_Header packet_header_to_send) {
+  if (packetSize > MAX_BUFFER_SIZE) {
+    packetSize = MAX_BUFFER_SIZE;
+  }
   Tiny::Packet<64> packet; 
   proto_door.enableCheckSum(); 
   proto_door.beginToSerial();
   packet.clear(); 
-  Serial.println();
-  packet.put(packet_header_to_send);          //add the packet header as the first byte
-  char packet_to_send_char[64]; 
-  uint8_t packet_to_send_int[64]; 
-  memcpy(packet_to_send_char, packet_to_send, strlen(packet_to_send)+1);
-  Serial.println("packet_to_send_char: ");
-  Serial.println(packet_to_send_char);
-  Serial.println("packet_to_send_int: ");
-  memcpy(packet_to_send_int, packet_to_send_char, strlen(packet_to_send_char)+1);
-  for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send_int[i]);
-  for (int i = 0; i < packetSize; i++) packet.put(packet_to_send_char[i]);
-  Serial.println("ba3d el put: ");
-  for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send[i]);
-  proto_door.write(packet);
-  Serial.println("ba3d el write: ");
-  for (int i = 0; i < packetSize; i++) Serial.print(packet_to_send[i]);
+
+  packet.put(packet_header_to_send);   //add the packet header as the first byte
+  for (int i = 0; i < packetSize; i++) packet.put(packet_to_send[i]);
   
+  proto_door.write(packet);
+}
+
+void send_packet_database(uint16_t packetSize, uint8_t packet_to_send[KEY_SIZE], Packet_Header packet_header_to_send) {
+  if (packetSize > MAX_BUFFER_SIZE) {
+    packetSize = MAX_BUFFER_SIZE;
+  }
+  Tiny::Packet<64> packet; 
+  proto_database.enableCheckSum(); 
+  proto_database.beginToSerial();
+  packet.clear(); 
+
+  packet.put(packet_header_to_send);   //add the packet header as the first byte
+  for (int i = 0; i < packetSize; i++) packet.put(packet_to_send[i]);
+  
+  proto_database.write(packet);
 }
