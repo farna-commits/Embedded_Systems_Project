@@ -5,9 +5,10 @@
 Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  onFrameIn_database);
 Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      onFrameIn_door);
 
-// bool check_ID(char hashed_ID[])
+// bool check_ID (char * hashed_ID)
 // {
-//   char query[256]=""'; char origin[256];
+//   char query [MAX_BUFFER_SIZE]; 
+//   char origin[MAX_BUFFER_SIZE];
   
 //   for(int i=0; i<256; i++) strcat(query,hashed_ID[i]);
 //   for(int i=0; i<DB_SIZE; i++)
@@ -25,6 +26,29 @@ Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),
   
 //   return authorized;
 // }
+
+bool check_ID (char * hashed_ID)
+{
+  // char * origin; 
+  // origin = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char)); 
+  // int fetched_int =0;
+  // for (int i = 0; i < DB_SIZE; i++)
+  // {
+  //   fetched_int = doc["ID"][i];
+  //   itoa(fetched_int, origin, 10); 
+  //   if (strcmp(hashed_ID, origin) == 0)
+  //     return true; 
+  // }
+  // return false; 
+
+  if (strcmp(hashed_ID,"c29237f8cad6d9d01475f0f27dea66061fb8f0ea54c1f04b8e86b09524293b3e") == 0)
+      return true; 
+    else 
+      return false; 
+    
+}
+
+
 void read_ID() {
   int i = 0;
   while (i < ID_SIZE)
@@ -142,6 +166,12 @@ void onFrameIn_database(char *buf, int len) {
     ProcessInputMessage(decrypted_string, hashed_string);
     Print("Hashed printing from main method: ");  
     Println(hashed_string);  
+
+    if(check_ID(hashed_string)) 
+      Println("Found men hena"); 
+    else 
+      Println("Not found men hena");
+    
 
     // //checking database for a match
     // bool authorized=0;
