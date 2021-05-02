@@ -27,8 +27,7 @@ Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),
 //   return authorized;
 // }
 
-bool check_ID (char * hashed_ID)
-{
+bool check_ID (char * hashed_ID) {
   // char * origin; 
   // origin = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char)); 
   // int fetched_int =0;
@@ -123,7 +122,7 @@ void onFrameIn_database(char *buf, int len) {
     
     //Send packet 
     flag_key_done = true; 
-    send_packet_database(KEY_SIZE, public_key_database, DIFFIE_PUBLIC_KEY);
+    send_packet_database(KEY_SIZE, public_key_database, ACK_KEY);
 
   }
   //Case ID 
@@ -185,7 +184,7 @@ void onFrameIn_database(char *buf, int len) {
 }
 
 void onFrameIn_door(char *buf, int len) {
-  if(buf[0]==DIFFIE_PUBLIC_KEY)
+  if(buf[0]==ACK_KEY)
   {
     //Printing Key packet 
     Print("The received key packet from the database is: "); 
