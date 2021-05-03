@@ -53,7 +53,7 @@ uint8_t*                public_key_door                           = (uint8_t*)ca
 uint8_t*                secret_key_door                           = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 uint8_t*                public_key_door_copy                      = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 uint8_t*                public_key_database_copy                  = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
-char   *                decrypted_string                          = (char*)   calloc(ID_SIZE , sizeof(char));
+char   *                decrypted_string                          = (char*)   calloc(KEY_SIZE, sizeof(char));
 
 //Functions 
 DeserializationError    Read_json             (StaticJsonDocument<700>, char*); 
