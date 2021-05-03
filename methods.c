@@ -8,11 +8,12 @@ Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),
 
 bool check_ID (char * hashed_ID) {
   char * origin; 
-  origin = (char*)calloc(256, sizeof(char)); 
+  origin = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char)); 
   for (int i = 0; i < DB_SIZE; i++)
   {
     origin = doc["ID"][i]; 
-    Println(origin); 
+    Print("Origin: ");
+    Println(origin);
     if (strcmp(hashed_ID, origin) == 0)
       return true; 
   }
@@ -141,7 +142,6 @@ void onFrameIn_database(char *buf, int len) {
 
     Println("Debug: ");
     Read_json(doc,json);
-    // check_ID(hashed_string);
     if(check_ID(hashed_string)) 
       Println("Found men hena"); 
     else 
