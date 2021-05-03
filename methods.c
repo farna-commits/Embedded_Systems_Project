@@ -142,12 +142,17 @@ void onFrameIn_database(char *buf, int len) {
 
     Println("Debug: ");
     Read_json(doc,json);
-    if(__check_ID(hashed_string)) 
+    if(__check_ID(hashed_string)) {
+      flag_response_done = true; 
       send_packet_database(KEY_SIZE, "Access Granted, Open Door", ACK_ACCESS);
-    else 
+      
+    }
+    else {
+      flag_response_done = true; 
       send_packet_database(KEY_SIZE, "Access Denied", ACK_ACCESS);
+    }
     
-
+    
     // //checking database for a match
     // bool authorized=0;
     // authorized=check_ID(hashed_string);  //can I pass a string in C? probably not. FML!

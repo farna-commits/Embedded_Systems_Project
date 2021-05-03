@@ -49,6 +49,7 @@ uint8_t                 proto_buffer_database [MAX_BUFFER_SIZE];
 bool                    flag_key_done                             = false;
 bool                    flag_ID_ack_done                          = false;
 bool                    flag_keep_sending_ID                      = false;
+bool                    flag_response_done                        = true; 
 uint8_t*                public_key_database                       = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 uint8_t*                secret_key_database                       = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 uint8_t*                public_key_door                           = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
