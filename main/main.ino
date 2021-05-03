@@ -30,7 +30,14 @@ void setup() {
   //sending the Public Key
   send_packet_door(KEY_SIZE, public_key_door, DIFFIE_PUBLIC_KEY);
   Read_json(doc,json);
-    
+  // char * fetched; 
+  // fetched = (char*)calloc(256, sizeof(char));
+  // for (int i = 0; i < DB_SIZE; i++)
+  // {
+  //   fetched = doc["ID"][i];
+  //   Println(fetched);
+  // }
+  
 }
 
 //Loop 

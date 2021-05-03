@@ -5,45 +5,18 @@
 Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  onFrameIn_database);
 Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      onFrameIn_door);
 
-// bool check_ID (char * hashed_ID)
-// {
-//   char query [MAX_BUFFER_SIZE]; 
-//   char origin[MAX_BUFFER_SIZE];
-  
-//   for(int i=0; i<256; i++) strcat(query,hashed_ID[i]);
-//   for(int i=0; i<DB_SIZE; i++)
-// {
-//   origin=doc["ID"][i];    //can't assign a char array to a string returned in doc[ID][i]?
-
-//     if(origin == query) 
-//     {
-//       authorized=true;
-//       i=DB_SIZE;
-//     }
-
-// }
-
-  
-//   return authorized;
-// }
 
 bool check_ID (char * hashed_ID) {
-  // char * origin; 
-  // origin = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char)); 
-  // int fetched_int =0;
-  // for (int i = 0; i < DB_SIZE; i++)
-  // {
-  //   fetched_int = doc["ID"][i];
-  //   itoa(fetched_int, origin, 10); 
-  //   if (strcmp(hashed_ID, origin) == 0)
-  //     return true; 
-  // }
-  // return false; 
-
-  if (strcmp(hashed_ID,"c29237f8cad6d9d01475f0f27dea66061fb8f0ea54c1f04b8e86b09524293b3e") == 0)
+  char * origin; 
+  origin = (char*)calloc(256, sizeof(char)); 
+  for (int i = 0; i < DB_SIZE; i++)
+  {
+    origin = doc["ID"][i]; 
+    Println(origin); 
+    if (strcmp(hashed_ID, origin) == 0)
       return true; 
-    else 
-      return false; 
+  }
+  return false; 
     
 }
 
@@ -166,6 +139,9 @@ void onFrameIn_database(char *buf, int len) {
     Print("Hashed printing from main method: ");  
     Println(hashed_string);  
 
+    Println("Debug: ");
+    Read_json(doc,json);
+    // check_ID(hashed_string);
     if(check_ID(hashed_string)) 
       Println("Found men hena"); 
     else 
