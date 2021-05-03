@@ -24,7 +24,8 @@ enum Packet_Header: char {
   ID_HEADER         = 'h',
   DIFFIE_PUBLIC_KEY = 'p',
   ACK_ID            = 'R', 
-  ACK_KEY           = 'K'
+  ACK_KEY           = 'K', 
+  ACK_ACCESS        = 'A'
 };
 
 //Variables 
@@ -64,7 +65,7 @@ void                    onFrameIn_database    (char *buf, int len);
 void                    onFrameIn_door        (char *buf, int len); 
 void                    send_packet_door      (uint16_t, char *, Packet_Header); 
 void                    send_packet_database  (uint16_t, char *, Packet_Header); 
-bool                    check_ID              (char *);
+static bool             __check_ID              (char *);
 static void             __array2uint16        (uint16_t &a, uint16_t array[ID_SIZE]);
 static void             __align_ID_string     (int, char a[]);
 

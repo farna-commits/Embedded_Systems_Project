@@ -6,7 +6,7 @@ Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_databa
 Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      onFrameIn_door);
 
 
-bool check_ID (char * hashed_ID) {
+static bool __check_ID (char * hashed_ID) {
   char * origin; 
   origin = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char)); 
   for (int i = 0; i < DB_SIZE; i++)
@@ -135,17 +135,17 @@ void onFrameIn_database(char *buf, int len) {
 
     //Hashing 
     char * hashed_string; 
-    hashed_string = (char*)calloc(256, sizeof(char));     
+    hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));     
     ProcessInputMessage(decrypted_string, hashed_string);
     Print("Hashed printing from main method: ");  
     Println(hashed_string);  
 
     Println("Debug: ");
     Read_json(doc,json);
-    if(check_ID(hashed_string)) 
-      Println("Found men hena"); 
+    if(__check_ID(hashed_string)) 
+      send_packet_database(KEY_SIZE, "Access Granted, Open Door", ACK_ACCESS);
     else 
-      Println("Not found men hena");
+      send_packet_database(KEY_SIZE, "Access Denied", ACK_ACCESS);
     
 
     // //checking database for a match
@@ -210,9 +210,9 @@ void onFrameIn_door(char *buf, int len) {
     flag_ID_ack_done = true;
     send_packet_door(KEY_SIZE, ID_string, ID_HEADER);
   }
-  else if (buf[0]==ACK_ID && flag_ID_ack_done == true){
+  else if (buf[0]==ACK_ACCESS && flag_ID_ack_done == true){
     //Decision to open door or not
-    Println("The database bey2ool tamam wala la");
+    for (int i = 1; i < len; i++) Print(buf[i]); Println();
   }
 }
 
