@@ -30,7 +30,7 @@ void setup() {
   //sending the Public Key
   send_packet_door(KEY_SIZE, public_key_door, DIFFIE_PUBLIC_KEY);
   Read_json(doc,json);
-
+    
 }
 
 //Loop 
