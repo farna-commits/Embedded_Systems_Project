@@ -5,26 +5,23 @@
 Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  onFrameIn_database);
 Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      onFrameIn_door);
 
-// bool check_ID(char hashed_ID[])
-// {
-//   char query[256]=""'; char origin[256];
-  
-//   for(int i=0; i<256; i++) strcat(query,hashed_ID[i]);
-//   for(int i=0; i<DB_SIZE; i++)
-// {
-//   origin=doc["ID"][i];    //can't assign a char array to a string returned in doc[ID][i]?
 
-//     if(origin == query) 
-//     {
-//       authorized=true;
-//       i=DB_SIZE;
-//     }
+static bool __check_ID (char * hashed_ID) {
+  char * origin; 
+  origin = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char)); 
+  for (int i = 0; i < DB_SIZE; i++)
+  {
+    origin = doc["ID"][i]; 
+    Print("Origin: ");
+    Println(origin);
+    if (strcmp(hashed_ID, origin) == 0)
+      return true; 
+  }
+  return false; 
+    
+}
 
-// }
 
-  
-//   return authorized;
-// }
 void read_ID() {
   int i = 0;
   while (i < ID_SIZE)
@@ -99,7 +96,7 @@ void onFrameIn_database(char *buf, int len) {
     
     //Send packet 
     flag_key_done = true; 
-    send_packet_database(KEY_SIZE, public_key_database, DIFFIE_PUBLIC_KEY);
+    send_packet_database(KEY_SIZE, public_key_database, ACK_KEY);
 
   }
   //Case ID 
@@ -138,11 +135,24 @@ void onFrameIn_database(char *buf, int len) {
 
     //Hashing 
     char * hashed_string; 
-    hashed_string = (char*)calloc(256, sizeof(char));     
+    hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));     
     ProcessInputMessage(decrypted_string, hashed_string);
     Print("Hashed printing from main method: ");  
     Println(hashed_string);  
 
+    Println("Debug: ");
+    Read_json(doc,json);
+    if(__check_ID(hashed_string)) {
+      flag_response_done = true; 
+      send_packet_database(KEY_SIZE, "Access Granted, Open Door", ACK_ACCESS);
+      
+    }
+    else {
+      flag_response_done = true; 
+      send_packet_database(KEY_SIZE, "Access Denied", ACK_ACCESS);
+    }
+    
+    
     // //checking database for a match
     // bool authorized=0;
     // authorized=check_ID(hashed_string);  //can I pass a string in C? probably not. FML!
@@ -155,7 +165,7 @@ void onFrameIn_database(char *buf, int len) {
 }
 
 void onFrameIn_door(char *buf, int len) {
-  if(buf[0]==DIFFIE_PUBLIC_KEY)
+  if(buf[0]==ACK_KEY)
   {
     //Printing Key packet 
     Print("The received key packet from the database is: "); 
@@ -205,9 +215,9 @@ void onFrameIn_door(char *buf, int len) {
     flag_ID_ack_done = true;
     send_packet_door(KEY_SIZE, ID_string, ID_HEADER);
   }
-  else if (buf[0]==ACK_ID && flag_ID_ack_done == true){
+  else if (buf[0]==ACK_ACCESS && flag_ID_ack_done == true){
     //Decision to open door or not
-    Println("The database bey2ool tamam wala la");
+    for (int i = 1; i < len; i++) Print(buf[i]); Println();
   }
 }
 

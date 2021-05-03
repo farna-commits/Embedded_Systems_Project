@@ -4,7 +4,8 @@ import hashlib
 def transofrm():
     df = pd.read_excel (r'database.xls')
     list = []
-    for i in range (0,len(df)):
+    DATABASE_SIZE = 25 
+    for i in range (0, DATABASE_SIZE):
         list.append(int(df.values[i]))
     list_strings = [str(int) for int in list]
     return list_strings 
