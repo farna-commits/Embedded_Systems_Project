@@ -2,8 +2,8 @@
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 
 //Tiny objects 
-Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  onFrameIn_database);
-Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      onFrameIn_door);
+Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  __onFrameIn_database);
+Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      __onFrameIn_door);
 
 
 static bool __check_ID (char * hashed_ID) {
@@ -21,30 +21,6 @@ static bool __check_ID (char * hashed_ID) {
     
 }
 
-
-void read_ID() {
-  int i = 0;
-  while (i < ID_SIZE)
-  {
-    key2 = keypad.getKey();
-    if (key2 != NO_KEY){
-      array_ID[i] = key2;
-      i++;
-    }
-  }
-}
-
-DeserializationError Read_json(StaticJsonDocument<700>, char*) {
-  // Deserialize the JSON document
-  DeserializationError error = deserializeJson(doc, json);
-  // Test if parsing succeeds.
-  if (error) {
-    Print(F("deserializeJson() failed: "));
-    Println(error.f_str());
-  }  
-  return error; 
-}
-
 static void __align_ID_string(int ID_example, char a[16]) {
   itoa(ID_example, a, 10);
   strcat(a,"00000000000");
@@ -58,20 +34,18 @@ static void __array2uint16(uint16_t &a, uint16_t array[ID_SIZE]) {
     }
 }
 
-void AES_encrypt(uint8_t * key, char * buf ) {
+static void __AES_encrypt(uint8_t * key, char * buf ) {
   aes128_enc_single(key, buf);
   Print("Encrypted ID:");
   Println(buf);
 
 }
 
-void AES_decrypt(uint8_t * key, char * buf) {
+static void __AES_decrypt(uint8_t * key, char * buf) {
   aes128_dec_single(key, buf);
 }
 
-
-
-void onFrameIn_database(char *buf, int len) {
+static void __onFrameIn_database(char *buf, int len) {
 
   //Case key 
   if(buf[0] == DIFFIE_PUBLIC_KEY && flag_key_done == false) {
@@ -120,7 +94,7 @@ void onFrameIn_database(char *buf, int len) {
 
 
     //Decryption        
-    AES_decrypt(public_key_door_copy, buf_copy);
+    __AES_decrypt(public_key_door_copy, buf_copy);
     //Copy decrypted string into a new sized string 
     for (int i = 0; i < ID_SIZE; i++) decrypted_string[i] = buf_copy[i];
     Print("Decrypted ID: "); 
@@ -141,30 +115,31 @@ void onFrameIn_database(char *buf, int len) {
     Println(hashed_string);  
 
     Println("Debug: ");
-    Read_json(doc,json);
+    if (!flag_call_once) {
+      Read_json(doc,json);
+      flag_call_once = true; 
+    }
+
     if(__check_ID(hashed_string)) {
-      flag_response_done = true; 
+      flag_key_done = false; 
+      hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));   
       send_packet_database(KEY_SIZE, "Access Granted, Open Door", ACK_ACCESS);
+      Print("Flag now after send packet: ");
+      Println(flag_response_done);
       
     }
     else {
-      flag_response_done = true; 
+      // flag_response_done = true; 
+      flag_key_done = false; 
+      hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));   
       send_packet_database(KEY_SIZE, "Access Denied", ACK_ACCESS);
     }
     
-    
-    // //checking database for a match
-    // bool authorized=0;
-    // authorized=check_ID(hashed_string);  //can I pass a string in C? probably not. FML!
-    // if(authorized) 
-    //    send_packet_database(KEY_SIZE, "Access Granted", ACK_ID);
-    // else 
-    //   send_packet_database(KEY_SIZE, "Access Denied", ACK_ID);
 
   }
 }
 
-void onFrameIn_door(char *buf, int len) {
+static void __onFrameIn_door(char *buf, int len) {
   if(buf[0]==ACK_KEY)
   {
     //Printing Key packet 
@@ -205,7 +180,7 @@ void onFrameIn_door(char *buf, int len) {
     for (int i = 0; i < len; i++) Print(ID_string[i]); Println();
 
     //Encryption     
-    AES_encrypt(public_key_database_copy, ID_string);
+    __AES_encrypt(public_key_database_copy, ID_string);
 
     //Print the encrypted data
     Println("The encrypted ID is: ");
@@ -218,6 +193,10 @@ void onFrameIn_door(char *buf, int len) {
   else if (buf[0]==ACK_ACCESS && flag_ID_ack_done == true){
     //Decision to open door or not
     for (int i = 1; i < len; i++) Print(buf[i]); Println();
+    flag_response_done = true; 
+    Print("Flag now: ");
+    Println(flag_response_done);
+    Println("Done, ready for next ID");   
   }
 }
 
@@ -236,7 +215,6 @@ void send_packet_door(uint16_t packetSize, char * packet_to_send, Packet_Header 
   
 }
 
-
 void send_packet_database(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
@@ -251,7 +229,6 @@ void send_packet_database(uint16_t packetSize, char * packet_to_send, Packet_Hea
   proto_database.write(packet);
   
 }
-
 
 void send_packet_door(uint16_t packetSize, uint8_t packet_to_send[KEY_SIZE], Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
@@ -281,4 +258,27 @@ void send_packet_database(uint16_t packetSize, uint8_t packet_to_send[KEY_SIZE],
   for (int i = 0; i < packetSize; i++) packet.put(packet_to_send[i]);
   
   proto_database.write(packet);
+}
+
+void read_ID() {
+  int i = 0;
+  while (i < ID_SIZE)
+  {
+    key2 = keypad.getKey();
+    if (key2 != NO_KEY){
+      array_ID[i] = key2;
+      i++;
+    }
+  }
+}
+
+DeserializationError Read_json(StaticJsonDocument<700>, char*) {
+  // Deserialize the JSON document
+  DeserializationError error = deserializeJson(doc, json);
+  // Test if parsing succeeds.
+  if (error) {
+    Print(F("deserializeJson() failed: "));
+    Println(error.f_str());
+  }  
+  return error; 
 }
