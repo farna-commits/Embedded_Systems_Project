@@ -143,23 +143,23 @@ void onFrameIn_database(char *buf, int len) {
     Println("Debug: ");
     Read_json(doc,json);
     if(__check_ID(hashed_string)) {
-      flag_response_done = true; 
+      // flag_response_done = true; 
+      // Print("Flag now before send packet: ");
+      // Println(flag_response_done);
+      flag_key_done = false; 
+      hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));   
       send_packet_database(KEY_SIZE, "Access Granted, Open Door", ACK_ACCESS);
+      Print("Flag now after send packet: ");
+      Println(flag_response_done);
       
     }
     else {
-      flag_response_done = true; 
+      // flag_response_done = true; 
+      flag_key_done = false; 
+      hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));   
       send_packet_database(KEY_SIZE, "Access Denied", ACK_ACCESS);
     }
     
-    
-    // //checking database for a match
-    // bool authorized=0;
-    // authorized=check_ID(hashed_string);  //can I pass a string in C? probably not. FML!
-    // if(authorized) 
-    //    send_packet_database(KEY_SIZE, "Access Granted", ACK_ID);
-    // else 
-    //   send_packet_database(KEY_SIZE, "Access Denied", ACK_ID);
 
   }
 }
@@ -218,6 +218,10 @@ void onFrameIn_door(char *buf, int len) {
   else if (buf[0]==ACK_ACCESS && flag_ID_ack_done == true){
     //Decision to open door or not
     for (int i = 1; i < len; i++) Print(buf[i]); Println();
+    flag_response_done = true; 
+    Print("Flag now: ");
+    Println(flag_response_done);
+    
   }
 }
 

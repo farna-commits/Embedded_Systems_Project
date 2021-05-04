@@ -7,6 +7,8 @@
 #include <string.h>
 #include <TinyProtocol.h>
 
+
+
 //Setup 
 void setup() {
 
@@ -14,8 +16,10 @@ void setup() {
   while (!Serial) continue;
   Serial.setTimeout(0); 
   Println();                                       
-  
+  // Read_json(doc,json);
 }
+
+
 
 //Loop 
 void loop() {
@@ -37,11 +41,11 @@ void loop() {
     Println();
     //sending the Public Key
     send_packet_door(KEY_SIZE, public_key_door, DIFFIE_PUBLIC_KEY);
-    Read_json(doc,json);
+    // Read_json(doc,json);
     flag_response_done = false;     
     Println("Done, ready for next ID"); 
     
   }
   proto_door.run();
-  Println(flag_response_done);
+  // Println(flag_response_done);
 }
