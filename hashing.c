@@ -211,5 +211,62 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
   Serial.println();
   Serial.print("----------------------------------------------------------------") ;
   Serial.println();
+
+  char delete_string[256] = "";
+  char delete_string2[32] = "";
+  // memcpy(finale, delete_string, 256); 
+  // memcpy(empty, delete_string2, 32);
+  // memset(&empty[0], 0, sizeof(empty));
+  memset(&finale[0], 0, sizeof(finale));
+  memset(&w[0], 0, sizeof(w));
+  memset(&s0[0], 0, sizeof(s0));
+  memset(&s1[0], 0, sizeof(s1));
+  //Re initialize 
+  tempo0 = 0;
+  tempo1 = 0;
+  tempo2 = 0; 
+  tempo3 = 0;
+  tempo4 = 0; 
+  tempo5 = 0; 
+  tempo6 = 0; 
+  tempo7 = 0;
+// Function ProcessInputMessage
+  S0  = 0;// Sigma0(HashA)  
+  S1  = 0;// Sigma1(HashE)  
+  maj = 0; // Majority (A,B,C)
+  ch  = 0;// Choose (E,F,G)
+  temp1 = 0;
+  temp2 = 0;
+  // w[64] = {}; //Holds input message
+  // s0[64] = {}; //Numbers to generate w[i]
+  // s1[64] = {}; //Number to generate w[i]
+  
+// Initial hash value
+  a = 0x6A09E667; 
+  b = 0xBB67AE85; 
+  c = 0x3C6EF372; 
+  d = 0xA54FF53A; 
+  e = 0x510E527F; 
+  f = 0x9B05688C; 
+  g = 0x1F83D9AB; 
+  h = 0x5BE0CD19; 
+  h0=0x6A09E667;
+  h1=0xBB67AE85;
+  h2=0x3C6EF372;
+  h3=0xA54FF53A;
+  h4=0x510E527F;
+  h5=0x9B05688C;
+  h6=0x1F83D9AB;
+  h7=0x5BE0CD19;
+  n = 0; 
+  LengthOfInputString = 0; 
+  ByteIndex = 0; 
+  WordIndex = 0;
+  WordPointer = 0;
+  NoOfWordsUsed = 0;
+  BytePosToWriteBit1 = 0;
+  ByteInWord2WriteBit1 = 0;
+  InputStringBitLength = 0; 
+  i = 0; // i use for S0 and S1
  
 }//End
