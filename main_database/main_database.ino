@@ -1,7 +1,3 @@
-/*
- * This simple example listens for commands from UART.
- * This is demonstration of Half Duplex protocol.
- */
 //  #include "C:\Users\Mahmoud Shamaa\Desktop\Embedded Systems\Project\Embedded_Systems_Project\methods_new.c"
 //  #include "C:\Users\Mahmoud Shamaa\Desktop\Embedded Systems\Project\Embedded_Systems_Project\hashing.c"
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.c"
@@ -21,14 +17,11 @@ void setup() {
     proto_database.enableCheckSum();
     /* Redirect all protocol communication to Serial0 UART */
     proto_database.beginToSerial();
-   
 
 }
 
 
 void loop()
 {
-    /* We do want to use simple checkSum */
-    
     proto_database.run();
 }

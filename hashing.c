@@ -80,14 +80,14 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
 // Function PrintWithLeadingZero
   unsigned long TempLz;  
   void PrintWithLeadingZero (unsigned long ReceiveUnsignedLong) {
-    TempLz=ReceiveUnsignedLong&0xf0000000; TempLz=TempLz>>28; /*Serial.print(TempLz, HEX);*/ tempo0=TempLz;
-    TempLz=ReceiveUnsignedLong&0x0f000000; TempLz=TempLz>>24; /*Serial.print(TempLz, HEX);*/ tempo1=TempLz;
-    TempLz=ReceiveUnsignedLong&0x00f00000; TempLz=TempLz>>20; /*Serial.print(TempLz, HEX);*/ tempo2=TempLz;
-    TempLz=ReceiveUnsignedLong&0x000f0000; TempLz=TempLz>>16; /*Serial.print(TempLz, HEX);*/ tempo3=TempLz;
-    TempLz=ReceiveUnsignedLong&0x0000f000; TempLz=TempLz>>12; /*Serial.print(TempLz, HEX);*/ tempo4=TempLz;
-    TempLz=ReceiveUnsignedLong&0x00000f00; TempLz=TempLz>>8; /*Serial.print(TempLz, HEX);*/  tempo5=TempLz;
-    TempLz=ReceiveUnsignedLong&0x000000f0; TempLz=TempLz>>4; /*Serial.print(TempLz, HEX);*/  tempo6=TempLz;
-    TempLz=ReceiveUnsignedLong&0x0000000f; TempLz=TempLz>>0; /*Serial.print(TempLz, HEX);*/  tempo7=TempLz;
+    TempLz=ReceiveUnsignedLong&0xf0000000; TempLz=TempLz>>28; tempo0=TempLz;
+    TempLz=ReceiveUnsignedLong&0x0f000000; TempLz=TempLz>>24; tempo1=TempLz;
+    TempLz=ReceiveUnsignedLong&0x00f00000; TempLz=TempLz>>20; tempo2=TempLz;
+    TempLz=ReceiveUnsignedLong&0x000f0000; TempLz=TempLz>>16; tempo3=TempLz;
+    TempLz=ReceiveUnsignedLong&0x0000f000; TempLz=TempLz>>12; tempo4=TempLz;
+    TempLz=ReceiveUnsignedLong&0x00000f00; TempLz=TempLz>>8;  tempo5=TempLz;
+    TempLz=ReceiveUnsignedLong&0x000000f0; TempLz=TempLz>>4;  tempo6=TempLz;
+    TempLz=ReceiveUnsignedLong&0x0000000f; TempLz=TempLz>>0;  tempo7=TempLz;
 
    ultoa(tempo0,char_tempo0,16); ultoa(tempo1,char_tempo1,16);ultoa(tempo2,char_tempo2,16);ultoa(tempo3,char_tempo3,16);ultoa(tempo4,char_tempo4,16);ultoa(tempo5,char_tempo5,16);ultoa(tempo6,char_tempo6,16);ultoa(tempo7,char_tempo7,16);
    strcat(empty, char_tempo0); strcat(empty, char_tempo1);  strcat(empty, char_tempo2); strcat(empty, char_tempo3);  strcat(empty, char_tempo4);  strcat(empty, char_tempo5);  strcat(empty, char_tempo6);  strcat(empty, char_tempo7);      
@@ -142,9 +142,6 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
   InputStringBitLength=LengthOfInputString*8;
   w[14]=0x0; //This version supports only 55 character of input message, so w[14] is always 0 
   w[15]=w[15]+InputStringBitLength;
-
-  //Serial.print(InputStringBitLength,HEX);
-  //Serial.println();
 
   //Calculate s0[i], s1[i] and w[i]
   for (i=16; i<=63; i++) {
@@ -211,14 +208,14 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
   Serial.println();
   Serial.print("----------------------------------------------------------------") ;
   Serial.println();
-
+  
+  //Re initialize 
   char delete_string[256] = "";
   char delete_string2[32] = "";
   memset(&finale[0], 0, sizeof(finale));
   memset(&w[0], 0, sizeof(w));
   memset(&s0[0], 0, sizeof(s0));
   memset(&s1[0], 0, sizeof(s1));
-  //Re initialize 
   tempo0 = 0;
   tempo1 = 0;
   tempo2 = 0; 

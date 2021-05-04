@@ -14,15 +14,14 @@ void setup() {
   Serial.begin(9600);  
   while (!Serial) continue;
   Serial.setTimeout(0); 
-  Println();                                       
-  // Read_json(doc,json);
+  Println();  
+
 }
 
 
 
 //Loop 
-void loop() {
-  
+void loop() {  
   
   if (flag_response_done) {
     read_ID();
@@ -39,9 +38,7 @@ void loop() {
     Println();
     //sending the Public Key
     send_packet_door(KEY_SIZE, public_key_door, DIFFIE_PUBLIC_KEY);
-    flag_response_done = false;     
-    Println("Done, ready for next ID"); 
-    
+    flag_response_done = false;           
   }
   proto_door.run();
 }
