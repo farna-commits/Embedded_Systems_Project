@@ -141,7 +141,11 @@ void onFrameIn_database(char *buf, int len) {
     Println(hashed_string);  
 
     Println("Debug: ");
-    Read_json(doc,json);
+    if (!flag_call_once) {
+      Read_json(doc,json);
+      flag_call_once = true; 
+    }
+    
     if(__check_ID(hashed_string)) {
       // flag_response_done = true; 
       // Print("Flag now before send packet: ");
@@ -221,7 +225,6 @@ void onFrameIn_door(char *buf, int len) {
     flag_response_done = true; 
     Print("Flag now: ");
     Println(flag_response_done);
-    Read_json(doc,json);
     
   }
 }

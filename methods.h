@@ -50,6 +50,7 @@ bool                    flag_key_done                             = false;
 bool                    flag_ID_ack_done                          = false;
 bool                    flag_keep_sending_ID                      = false;
 bool                    flag_response_done                        = true; 
+bool                    flag_call_once                            = false; 
 uint8_t*                public_key_database                       = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 uint8_t*                secret_key_database                       = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
 uint8_t*                public_key_door                           = (uint8_t*)calloc(KEY_SIZE, sizeof(uint8_t));
@@ -69,9 +70,6 @@ void                    send_packet_database  (uint16_t, char *, Packet_Header);
 static bool             __check_ID            (char *);
 static void             __array2uint16        (uint16_t &a, uint16_t array[ID_SIZE]);
 static void             __align_ID_string     (int, char a[]);
-
-
-
 
 
 #ifdef __cplusplus
