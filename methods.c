@@ -221,6 +221,7 @@ void onFrameIn_door(char *buf, int len) {
     flag_response_done = true; 
     Print("Flag now: ");
     Println(flag_response_done);
+    Read_json(doc,json);
     
   }
 }

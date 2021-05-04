@@ -214,9 +214,6 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
 
   char delete_string[256] = "";
   char delete_string2[32] = "";
-  // memcpy(finale, delete_string, 256); 
-  // memcpy(empty, delete_string2, 32);
-  // memset(&empty[0], 0, sizeof(empty));
   memset(&finale[0], 0, sizeof(finale));
   memset(&w[0], 0, sizeof(w));
   memset(&s0[0], 0, sizeof(s0));
@@ -237,10 +234,6 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
   ch  = 0;// Choose (E,F,G)
   temp1 = 0;
   temp2 = 0;
-  // w[64] = {}; //Holds input message
-  // s0[64] = {}; //Numbers to generate w[i]
-  // s1[64] = {}; //Number to generate w[i]
-  
 // Initial hash value
   a = 0x6A09E667; 
   b = 0xBB67AE85; 
