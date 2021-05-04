@@ -18,7 +18,9 @@ void setup() {
     Serial.setTimeout(0);
     /* Initialize serial protocol for test purposes */
     Serial.begin(9600);
-    
+    proto_database.enableCheckSum();
+    /* Redirect all protocol communication to Serial0 UART */
+    proto_database.beginToSerial();
    
 
 }
@@ -27,8 +29,6 @@ void setup() {
 void loop()
 {
     /* We do want to use simple checkSum */
-    proto_database.enableCheckSum();
-    /* Redirect all protocol communication to Serial0 UART */
-    proto_database.beginToSerial();
+    
     proto_database.run();
 }
