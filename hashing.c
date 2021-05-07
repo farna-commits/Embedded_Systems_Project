@@ -190,9 +190,7 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
   h7=h7+h;
 
   Serial.println() ;
-  Serial.print("SHA256 hashed output message...") ;
-  Serial.println() ;
-  
+  Serial.print("Hashed ID: ");
 
   //Print the result
   PrintWithLeadingZero(h0); 
@@ -206,9 +204,9 @@ unsigned long tempo0,tempo1,tempo2, tempo3,tempo4, tempo5, tempo6, tempo7;
   Serial.print(finale);
   strcpy(hashed_string, finale);
   Serial.println();
-  Serial.print("----------------------------------------------------------------") ;
-  Serial.println();
-  
+  // Serial.print("----------------------------------------------------------------") ;
+  // Serial.println();
+
   //Re initialize 
   char delete_string[256] = "";
   char delete_string2[32] = "";

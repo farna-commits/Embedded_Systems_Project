@@ -1,21 +1,21 @@
-#include "methods.h"
+//Includes 
+#include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\methods.h"
 #include "D:\AUC\Semester10(Spring2021)\Embedded\Project\repo\Embedded_Systems_Project\hashing.c"
 
-//Tiny objects 
-Tiny::ProtoHd  proto_database (proto_buffer_database, sizeof(proto_buffer_database),  __onFrameIn_database);
-Tiny::ProtoHd  proto_door     (proto_buffer_door,     sizeof(proto_buffer_door),      __onFrameIn_door);
-
-
+//Statics 
 static bool __check_ID (char * hashed_ID) {
   char * origin; 
   origin = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char)); 
+  Println("Begining Linear Search in Hashed Database: ");
   for (int i = 0; i < DB_SIZE; i++)
   {
     origin = doc["ID"][i]; 
-    Print("Origin: ");
+    Print("Database key number ["); Print(i); Print("] : ");
     Println(origin);
-    if (strcmp(hashed_ID, origin) == 0)
+    if (strcmp(hashed_ID, origin) == 0) {
+      Println("Match Found!");
       return true; 
+    }
   }
   return false; 
     
@@ -36,7 +36,7 @@ static void __array2uint16(uint16_t &a, uint16_t array[ID_SIZE]) {
 
 static void __AES_encrypt(uint8_t * key, char * buf ) {
   aes128_enc_single(key, buf);
-  Print("Encrypted ID:");
+  Print("Encrypted ID: ");
   Println(buf);
 
 }
@@ -49,23 +49,23 @@ static void __onFrameIn_database(char *buf, int len) {
 
   //Case key 
   if(buf[0] == DIFFIE_PUBLIC_KEY && flag_key_done == false) {
-
-    //Printing key packet 
-    Print("The received key packet from the door is: "); 
-    for (int i=0; i<len; i++) Print(buf[i]);
-    
+        
     //DH1 
     DH1(public_key_database, secret_key_database); 
-    Println("this is the database PK: ");
+    Print("Database Public Key: ");
     for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database[i]);
     Println();
-    Println("this is the database SK: ");
+    Print("Database Secret Key: ");
     for (int i = 0; i < KEY_SIZE; i++) Print(secret_key_database[i]);
     Println();
 
+    //Printing key packet 
+    Print("The Received Key Packet From The Door is: "); 
+    for (int i=0; i<len; i++) Print(buf[i]); Println();
+
     //Extracting key from packet  
     for (int i = 0; i < KEY_SIZE; i++) public_key_door_copy[i] = buf[i+2];
-    Print("The received public key copy is: "); 
+    Print("The Received Public Key is: "); 
     for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
     
     //Send packet 
@@ -76,65 +76,56 @@ static void __onFrameIn_database(char *buf, int len) {
   //Case ID 
   else if(buf[0]== ID_HEADER && flag_key_done == true) {
 
-    //Printing ID packet 
-    Print("The received Encrypted ID packet is: "); 
-    for (int i=0; i<len; i++) Print(buf[i]); Println();
-
     //DH2
     DH2(public_key_door_copy, secret_key_database);
-    Println("ABG key is: ");
+    Print("Common Generated Key in Door and Database is: ");
     for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
+
+
+    //Printing ID packet 
+    Print("The Received Encrypted ID Packet is: "); 
+    for (int i=0; i<len; i++) Print(buf[i]); Println();
 
     //Extracting ID packet 
     char * buf_copy;
     buf_copy = (char*)calloc(len, sizeof(char)); 
     for (int i = 0; i < len - 1; i++) buf_copy[i] = buf[i+2];
-    Print("The encrypted ID copy is: "); 
+    Print("The Encrypted ID is: "); 
     for (int i = 0; i < len - 1; i++) Print(buf_copy[i]); Println();
-
 
     //Decryption        
     __AES_decrypt(public_key_door_copy, buf_copy);
     //Copy decrypted string into a new sized string 
     for (int i = 0; i < ID_SIZE; i++) decrypted_string[i] = buf_copy[i];
     Print("Decrypted ID: "); 
-    for (int i = 0; i < ID_SIZE; i++) Print(decrypted_string[i]);
+    for (int i = 0; i < ID_SIZE; i++) Print(decrypted_string[i]); Println();
   
 
-    //Send done 
-    Tiny::Packet<64> packet;
-    packet.clear();
-    packet.put( "Now checking: " );          
-    proto_database.write(packet);
-
     //Hashing 
+    Println("Hashing Decrypted ID....."); 
     char * hashed_string; 
     hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));     
     ProcessInputMessage(decrypted_string, hashed_string);
-    Print("Hashed printing from main method: ");  
-    Println(hashed_string);  
 
-    Println("Debug: ");
+    //Deserialize JSON once 
     if (!flag_call_once) {
       Read_json(doc,json);
       flag_call_once = true; 
     }
 
+    //Check with database 
     if(__check_ID(hashed_string)) {
       flag_key_done = false; 
       hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));   
-      send_packet_database(KEY_SIZE, "Access Granted, Open Door", ACK_ACCESS);
-      Print("Flag now after send packet: ");
-      Println(flag_response_done);
-      
+      send_packet_database(KEY_SIZE, "Access Granted, Open Door", ACK_ACCESS);      
     }
     else {
-      // flag_response_done = true; 
       flag_key_done = false; 
       hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));   
       send_packet_database(KEY_SIZE, "Access Denied", ACK_ACCESS);
     }
     
+    Println();
 
   }
 }
@@ -143,12 +134,13 @@ static void __onFrameIn_door(char *buf, int len) {
   if(buf[0]==ACK_KEY)
   {
     //Printing Key packet 
-    Print("The received key packet from the database is: "); 
+    Println();
+    Print("The Received Key Packet From The Database is: "); 
     for (int i=0; i<len; i++) Print(buf[i]); Println();
 
     //Extracting key from packet  
     for (int i = 0; i < KEY_SIZE; i++) public_key_database_copy[i] = buf[i+2];
-    Print("The received public key copy is: "); 
+    Print("The Received Public Key is: "); 
     for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database_copy[i]); Println();
 
 
@@ -156,50 +148,35 @@ static void __onFrameIn_door(char *buf, int len) {
     int ID_example = 0; 
     uint16_t Entered_ID = 0;
     __array2uint16(Entered_ID, array_ID);
-    Println("ID: ");
-    Println(Entered_ID);
     ID_example = Entered_ID; 
-    Print("Fetching an ID from database as an example: ");
-    Println(ID_example);  
     char * ID_string;
     ID_string = (char*)calloc(64, sizeof(char));  
     __align_ID_string(ID_example, ID_string); 
-    //After Alignment
-    Println("Aligned: ");
-    Println(ID_string);
 
     //DH2
     DH2(public_key_database_copy, secret_key_door);
-    Println("ABG key is: ");
+    Print("Common Generated Key in Door and Database is: ");
     for (int i = 0; i < KEY_SIZE; i++) Print(public_key_database_copy[i]); Println();
-    Print("ABG kolo is: ");
-    Println((int)public_key_database_copy);
-
-    //Print the encrypted data
-    Println("The encrypted ID before encryption is: ");
-    for (int i = 0; i < len; i++) Print(ID_string[i]); Println();
 
     //Encryption     
     __AES_encrypt(public_key_database_copy, ID_string);
 
-    //Print the encrypted data
-    Println("The encrypted ID is: ");
-    for (int i = 0; i < len; i++) Print(ID_string[i]); Println();
-
     // Send the encrypted data
     flag_ID_ack_done = true;
     send_packet_door(KEY_SIZE, ID_string, ID_HEADER);
+    Println();
   }
   else if (buf[0]==ACK_ACCESS && flag_ID_ack_done == true){
     //Decision to open door or not
     for (int i = 1; i < len; i++) Print(buf[i]); Println();
     flag_response_done = true; 
-    Print("Flag now: ");
-    Println(flag_response_done);
-    Println("Done, ready for next ID");   
+    Println();
+    Println();
+    Println("Enter ID: ");   
   }
 }
 
+//Publics 
 void send_packet_door(uint16_t packetSize, char * packet_to_send, Packet_Header packet_header_to_send) {
   if (packetSize > MAX_BUFFER_SIZE) {
     packetSize = MAX_BUFFER_SIZE;
