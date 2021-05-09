@@ -7,14 +7,13 @@ void setup() {
   Serial.setTimeout(MAX_TIMEOUT);                                       //Set max ms to wait for serial data (No timeout)
   proto_door.enableCheckSum();                                          //Tinyproto checksum error correction enabler
   proto_door.beginToSerial();                                           //Redirect all protocol communication to Serial0 UART
-  Println("Enter ID: ");                                                //Initial Message to enter the ID from user
 }
 
 //Loop 
 void loop() {    
   if (flag_response_done) {
     read_ID();                                                          //Keypad Function 
-    Print("Entered ID is: ");                                           //Message 
+    Print("Entered PIN is: ");                                           //Message 
     for (int i = 0; i < ID_SIZE; i++) Print((char)array_ID[i]);         //Printing ID 
     Println();                                                          //New Line
     DH1(public_key_door, secret_key_door);                              //DH1 Function to generate door's secret & public key      
