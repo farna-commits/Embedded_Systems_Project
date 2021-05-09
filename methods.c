@@ -112,19 +112,30 @@ static void __onFrameIn_database(char *buf, int len) {
       Read_json(doc,json);
       flag_call_once = true; 
     }
+    
+    char * decision_string;
+    decision_string = (char*)calloc(64, sizeof(char));  
 
     //Check with database 
     if(__check_ID(hashed_string)) {
       flag_key_done = false; 
-      hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));   
-      send_packet_database(KEY_SIZE, "Access Granted, Open Door", ACK_ACCESS);      
+      strcpy(decision_string, "Access Granted!");
+      Print("Common Generated Key in Door and Database is: ");
+      for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
+      //Encryption
+      __AES_encrypt(public_key_door_copy, decision_string);
+      send_packet_database(KEY_SIZE, decision_string, ACK_ACCESS);      
     }
     else {
       flag_key_done = false; 
-      hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));   
-      send_packet_database(KEY_SIZE, "Access Denied", ACK_ACCESS);
+      strcpy(decision_string, "Access Denied!");
+      Print("Common Generated Key in Door and Database is: ");
+      for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
+      __AES_encrypt(public_key_door_copy, decision_string);
+      send_packet_database(KEY_SIZE, decision_string, ACK_ACCESS);
     }
     
+    Println(decision_string);
     Println();
 
   }
