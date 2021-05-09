@@ -24,10 +24,9 @@
 
 //Enum
 enum Packet_Header: char {
-  ID_HEADER         = 'h',
   DIFFIE_PUBLIC_KEY = 'p',
-  ACK_ID            = 'R', 
   ACK_KEY           = 'K', 
+  ID_HEADER         = 'h',    
   ACK_ACCESS        = 'A'
 };
 

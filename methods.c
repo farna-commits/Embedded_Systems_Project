@@ -17,6 +17,7 @@ static bool __check_ID (char * hashed_ID) {
       return true; 
     }
   }
+  Println("Match Not Found!");
   return false; 
     
 }
@@ -36,7 +37,7 @@ static void __array2uint16(uint16_t &a, uint16_t array[ID_SIZE]) {
 
 static void __AES_encrypt(uint8_t * key, char * buf ) {
   aes128_enc_single(key, buf);
-  Print("Encrypted ID: ");
+  Print("Encrypted: ");
   Println(buf);
 
 }
@@ -90,19 +91,19 @@ static void __onFrameIn_database(char *buf, int len) {
     char * buf_copy;
     buf_copy = (char*)calloc(len, sizeof(char)); 
     for (int i = 0; i < len - 1; i++) buf_copy[i] = buf[i+2];
-    Print("The Encrypted ID is: "); 
+    Print("The Encrypted PIN is: "); 
     for (int i = 0; i < len - 1; i++) Print(buf_copy[i]); Println();
 
     //Decryption        
     __AES_decrypt(public_key_door_copy, buf_copy);
     //Copy decrypted string into a new sized string 
     for (int i = 0; i < ID_SIZE; i++) decrypted_string[i] = buf_copy[i];
-    Print("Decrypted ID: "); 
+    Print("Decrypted PIN: "); 
     for (int i = 0; i < ID_SIZE; i++) Print(decrypted_string[i]); Println();
   
 
     //Hashing 
-    Println("Hashing Decrypted ID....."); 
+    Println("Hashing Decrypted PIN....."); 
     char * hashed_string; 
     hashed_string = (char*)calloc(MAX_BUFFER_SIZE, sizeof(char));     
     ProcessInputMessage(decrypted_string, hashed_string);
@@ -120,8 +121,6 @@ static void __onFrameIn_database(char *buf, int len) {
     if(__check_ID(hashed_string)) {
       flag_key_done = false; 
       strcpy(decision_string, "Access Granted!");
-      Print("Common Generated Key in Door and Database is: ");
-      for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
       //Encryption
       __AES_encrypt(public_key_door_copy, decision_string);
       send_packet_database(KEY_SIZE, decision_string, ACK_ACCESS);      
@@ -129,8 +128,6 @@ static void __onFrameIn_database(char *buf, int len) {
     else {
       flag_key_done = false; 
       strcpy(decision_string, "Access Denied!");
-      Print("Common Generated Key in Door and Database is: ");
-      for (int i = 0; i < KEY_SIZE; i++) Print(public_key_door_copy[i]); Println();
       __AES_encrypt(public_key_door_copy, decision_string);
       send_packet_database(KEY_SIZE, decision_string, ACK_ACCESS);
     }
@@ -178,12 +175,20 @@ static void __onFrameIn_door(char *buf, int len) {
     Println();
   }
   else if (buf[0]==ACK_ACCESS && flag_ID_ack_done == true){
-    //Decision to open door or not
-    for (int i = 1; i < len; i++) Print(buf[i]); Println();
+    //print packet 
+    Print("Received Decision Packet: "); 
+    for (int i = 0; i < len; i++) Print(buf[i]); Println();
+    //extract 
+    char * buf_copy2;
+    buf_copy2 = (char*)calloc(len, sizeof(char)); 
+    for (int i = 0; i < len - 1; i++) buf_copy2[i] = buf[i+2];
+    __AES_decrypt(public_key_database_copy, buf_copy2);
+    //Decision to open door or not    
+    Print("Printing Decision: "); 
+    for (int i = 0; i < 16; i++) Print(buf_copy2[i]);
     flag_response_done = true; 
     Println();
     Println();
-    Println("Enter ID: ");   
   }
 }
 
@@ -253,7 +258,7 @@ void read_ID() {
   while (i < ID_SIZE)
   {
     key2 = keypad.getKey();
-    if (key2 != NO_KEY){
+    if (key2 != NO_KEY) {
       array_ID[i] = key2;
       i++;
     }
